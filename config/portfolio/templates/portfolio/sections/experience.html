@@ -1,0 +1,145 @@
+<section id="experience">
+
+    <div class="container">
+
+        <div class="text-center reveal">
+
+            <div class="section-label">
+                Career
+            </div>
+
+            <h2 class="section-title">
+                Experience
+            </h2>
+
+            <p class="section-description">
+                Professional experience and practical work.
+            </p>
+
+        </div>
+
+
+        <div class="timeline">
+
+            {% for experience in experiences %}
+
+                <div class="timeline-item reveal">
+
+                    <div class="glass-card">
+
+                        <div
+                            class="d-flex flex-column flex-md-row justify-content-between gap-3"
+                        >
+
+                            <div>
+
+                                <h3>
+                                    {{ experience.job_title }}
+                                </h3>
+
+
+                                {% if experience.company_url %}
+
+                                    <a
+                                        href="{{ experience.company_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="gradient-text"
+                                    >
+
+                                        <i class="bi bi-building me-1"></i>
+
+                                        {{ experience.company_name }}
+
+                                        <i class="bi bi-box-arrow-up-right ms-1"></i>
+
+                                    </a>
+
+                                {% else %}
+
+                                    <div class="gradient-text">
+
+                                        <i class="bi bi-building me-1"></i>
+
+                                        {{ experience.company_name }}
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="timeline-date">
+
+                                <i class="bi bi-calendar3 me-1"></i>
+
+                                {{ experience.start_date|date:"M Y" }}
+
+                                —
+
+                                {% if experience.currently_working %}
+
+                                    Present
+
+                                {% elif experience.end_date %}
+
+                                    {{ experience.end_date|date:"M Y" }}
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        {% if experience.location %}
+
+                            <div class="text-secondary mt-3">
+
+                                <i class="bi bi-geo-alt me-1"></i>
+
+                                {{ experience.location }}
+
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if experience.description %}
+
+                            <div class="text-secondary mt-3 experience-description">
+
+                                {{ experience.description|linebreaks }}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="glass-card text-center">
+
+                    <i class="bi bi-briefcase fs-1 mb-3"></i>
+
+                    <h4>
+                        No experience added yet
+                    </h4>
+
+                    <p class="text-secondary mb-0">
+                        Experience added from Django Admin will appear here.
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>

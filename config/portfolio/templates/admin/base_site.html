@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}
+    Portfolio Admin
+{% endblock %}
+
+{% block branding %}
+
+<div class="custom-admin-brand">
+
+    <div class="custom-admin-logo">
+        P
+    </div>
+
+    <div>
+        <h1 id="site-name">
+            <a href="{% url 'admin:index' %}">
+                Portfolio Administration
+            </a>
+        </h1>
+
+        <small class="custom-admin-subtitle">
+            Content Management Dashboard
+        </small>
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extrastyle %}
+
+{{ block.super }}
+
+<link
+    rel="stylesheet"
+    href="{% static 'portfolio/css/admin.css' %}"
+>
+
+{% endblock %}

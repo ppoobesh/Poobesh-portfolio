@@ -1,0 +1,143 @@
+<section id="skills">
+
+    <div class="container">
+
+        <div class="text-center reveal">
+
+            <div class="section-label">
+                Expertise
+            </div>
+
+            <h2 class="section-title">
+                Skills
+            </h2>
+
+            <p class="section-description">
+                Technologies and tools I work with.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for skill in skills %}
+
+                <div class="col-md-6 col-lg-4 reveal">
+
+                    <div class="skill-card h-100">
+
+                        <div class="skill-header">
+
+                            <div class="skill-icon">
+
+                                {% if skill.category == "programming" %}
+
+                                    <i class="bi bi-code-square"></i>
+
+                                {% elif skill.category == "web" %}
+
+                                    <i class="bi bi-window"></i>
+
+                                {% elif skill.category == "database" %}
+
+                                    <i class="bi bi-database"></i>
+
+                                {% elif skill.category == "ai_ml" %}
+
+                                    <i class="bi bi-cpu"></i>
+
+                                {% elif skill.category == "embedded" %}
+
+                                    <i class="bi bi-motherboard"></i>
+
+                                {% elif skill.category == "tools" %}
+
+                                    <i class="bi bi-tools"></i>
+
+                                {% else %}
+
+                                    <i class="bi bi-lightning-charge"></i>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="flex-grow-1">
+
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <h4 class="skill-name mb-0">
+
+                                        {{ skill.name }}
+
+                                    </h4>
+
+                                    <span class="skill-percentage">
+
+                                        {{ skill.proficiency }}%
+
+                                    </span>
+
+                                </div>
+
+
+                                <small class="text-secondary">
+
+                                    {{ skill.get_category_display }}
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="progress mt-4"
+                            role="progressbar"
+                            aria-label="{{ skill.name }} proficiency"
+                            aria-valuenow="{{ skill.proficiency }}"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >
+
+                            <div
+                                class="progress-bar skill-progress"
+                                data-width="{{ skill.proficiency }}"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="col-12">
+
+                    <div class="glass-card text-center">
+
+                        <i class="bi bi-lightning-charge fs-1 mb-3"></i>
+
+                        <h4>
+                            No skills added yet
+                        </h4>
+
+                        <p class="text-secondary mb-0">
+                            Skills added from Django Admin will appear here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>

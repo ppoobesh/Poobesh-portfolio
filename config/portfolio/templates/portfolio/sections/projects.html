@@ -1,0 +1,197 @@
+<section id="projects">
+
+    <div class="container">
+
+        <div class="text-center reveal">
+
+            <div class="section-label">
+                Work
+            </div>
+
+            <h2 class="section-title">
+                Projects
+            </h2>
+
+            <p class="section-description">
+                Some of the projects and applications I have worked on.
+            </p>
+
+        </div>
+
+
+        <!-- FILTER BUTTONS -->
+
+        <div class="project-filters reveal">
+
+            <button
+                type="button"
+                class="project-filter-btn active"
+                data-filter="all"
+            >
+                All
+            </button>
+
+            <button
+                type="button"
+                class="project-filter-btn"
+                data-filter="featured"
+            >
+                Featured
+            </button>
+
+        </div>
+
+
+        <!-- PROJECT GRID -->
+
+        <div class="row g-4" id="projectGrid">
+
+            {% for project in projects %}
+
+                <div
+                    class="col-md-6 col-xl-4 reveal project-item"
+                    data-featured="{% if project.featured %}true{% else %}false{% endif %}"
+                >
+
+                    <div class="project-card h-100">
+
+                        <div class="project-image-wrapper">
+
+                            {% if project.image %}
+
+                                <img
+                                    src="{{ project.image.url }}"
+                                    alt="{{ project.title }}"
+                                    class="project-image"
+                                    loading="lazy"
+                                >
+
+                            {% else %}
+
+                                <div class="project-placeholder">
+
+                                    <i class="bi bi-code-slash"></i>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            {% if project.featured %}
+
+                                <span class="featured-badge">
+
+                                    <i class="bi bi-star-fill"></i>
+
+                                    Featured
+
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="project-content">
+
+                            <h3 class="project-title">
+
+                                {{ project.title }}
+
+                            </h3>
+
+
+                            <p class="project-description">
+
+                                {{ project.short_description }}
+
+                            </p>
+
+
+                            {% if project.technologies %}
+
+                                <div class="project-tech">
+
+                                    <i class="bi bi-stack"></i>
+
+                                    <span>
+                                        {{ project.technologies }}
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <div class="project-actions">
+
+                                {% if project.github_url %}
+
+                                    <a
+                                        href="{{ project.github_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="btn-outline-modern"
+                                    >
+
+                                        <i class="bi bi-github"></i>
+
+                                        GitHub
+
+                                    </a>
+
+                                {% endif %}
+
+
+                                {% if project.demo_url %}
+
+                                    <a
+                                        href="{{ project.demo_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="btn-gradient"
+                                    >
+
+                                        <i class="bi bi-box-arrow-up-right"></i>
+
+                                        Live Demo
+
+                                    </a>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="col-12">
+
+                    <div class="glass-card text-center">
+
+                        <i class="bi bi-folder2-open fs-1 mb-3"></i>
+
+                        <h4>
+                            No projects added yet
+                        </h4>
+
+                        <p class="text-secondary mb-0">
+                            Projects added through Django Admin will appear here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>

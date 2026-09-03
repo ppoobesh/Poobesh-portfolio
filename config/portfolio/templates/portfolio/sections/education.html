@@ -1,0 +1,149 @@
+<section id="education">
+
+    <div class="container">
+
+        <div class="text-center reveal">
+
+            <div class="section-label">
+                Academic Background
+            </div>
+
+            <h2 class="section-title">
+                Education
+            </h2>
+
+            <p class="section-description">
+                My academic journey and engineering background.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for item in education %}
+
+                <div class="col-lg-6 reveal">
+
+                    <div class="education-card h-100">
+
+                        <div class="education-icon">
+
+                            <i class="bi bi-mortarboard-fill"></i>
+
+                        </div>
+
+
+                        <div class="education-content">
+
+                            <h3>
+                                {{ item.degree }}
+                            </h3>
+
+
+                            {% if item.field_of_study %}
+
+                                <h5 class="gradient-text">
+                                    {{ item.field_of_study }}
+                                </h5>
+
+                            {% endif %}
+
+
+                            <div class="education-institution">
+
+                                {% if item.institution_url %}
+
+                                    <a
+                                        href="{{ item.institution_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+
+                                        <i class="bi bi-building"></i>
+
+                                        {{ item.institution }}
+
+                                        <i class="bi bi-box-arrow-up-right small"></i>
+
+                                    </a>
+
+                                {% else %}
+
+                                    <span>
+
+                                        <i class="bi bi-building"></i>
+
+                                        {{ item.institution }}
+
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="education-date">
+
+                                <i class="bi bi-calendar3"></i>
+
+                                {{ item.start_date|date:"M Y" }}
+
+                                —
+
+                                {% if item.end_date %}
+
+                                    {{ item.end_date|date:"M Y" }}
+
+                                {% else %}
+
+                                    Present
+
+                                {% endif %}
+
+                            </div>
+
+
+                            {% if item.description %}
+
+                                <div class="education-description">
+
+                                    {{ item.description|linebreaks }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="col-12">
+
+                    <div class="glass-card text-center">
+
+                        <i class="bi bi-mortarboard fs-1 mb-3"></i>
+
+                        <h4>
+                            No education added yet
+                        </h4>
+
+                        <p class="text-secondary mb-0">
+                            Education records added from Django Admin will appear here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>

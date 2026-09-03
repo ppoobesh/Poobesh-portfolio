@@ -1,0 +1,470 @@
+<section id="contact">
+
+    <div class="container">
+
+        <!-- SECTION HEADER -->
+        <div class="text-center reveal">
+
+            <div class="section-label">
+                Contact
+            </div>
+
+            <h2 class="section-title">
+                Let's Connect
+            </h2>
+
+            <p class="section-description">
+                Have a project, opportunity or collaboration in mind?
+                Send me a message.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4 align-items-stretch">
+
+            <!-- =====================================================
+                 CONTACT INFORMATION
+            ====================================================== -->
+
+            <div class="col-lg-5 reveal">
+
+                <div class="glass-card contact-info-card h-100">
+
+                    <div class="icon-box mb-4">
+                        <i class="bi bi-chat-dots-fill"></i>
+                    </div>
+
+
+                    <h3>
+                        Contact Information
+                    </h3>
+
+
+                    <p class="text-secondary mb-4">
+                        Feel free to reach out using the form
+                        or through the contact details below.
+                    </p>
+
+
+                    {% if profile %}
+
+                        <!-- EMAIL -->
+
+                        {% if profile.email %}
+
+                            <a
+                                href="mailto:{{ profile.email }}"
+                                class="contact-info-item"
+                            >
+
+                                <div class="contact-info-icon">
+                                    <i class="bi bi-envelope-fill"></i>
+                                </div>
+
+
+                                <div>
+
+                                    <small>
+                                        Email
+                                    </small>
+
+                                    <span>
+                                        {{ profile.email }}
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+                        {% endif %}
+
+
+                        <!-- PHONE -->
+
+                        {% if profile.phone %}
+
+                            <a
+                                href="tel:{{ profile.phone }}"
+                                class="contact-info-item"
+                            >
+
+                                <div class="contact-info-icon">
+                                    <i class="bi bi-telephone-fill"></i>
+                                </div>
+
+
+                                <div>
+
+                                    <small>
+                                        Phone
+                                    </small>
+
+                                    <span>
+                                        {{ profile.phone }}
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+                        {% endif %}
+
+
+                        <!-- LOCATION -->
+
+                        {% if profile.location %}
+
+                            <div class="contact-info-item">
+
+                                <div class="contact-info-icon">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                </div>
+
+
+                                <div>
+
+                                    <small>
+                                        Location
+                                    </small>
+
+                                    <span>
+                                        {{ profile.location }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+                    <!-- SOCIAL LINKS -->
+
+                    {% if social_links %}
+
+                        <div class="contact-social-links mt-4">
+
+                            {% for social in social_links %}
+
+                                <a
+                                    href="{{ social.url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="{{ social.get_platform_display }}"
+                                >
+
+                                    {% if social.icon %}
+
+                                        <i class="{{ social.icon }}"></i>
+
+                                    {% elif social.platform == "github" %}
+
+                                        <i class="bi bi-github"></i>
+
+                                    {% elif social.platform == "linkedin" %}
+
+                                        <i class="bi bi-linkedin"></i>
+
+                                    {% elif social.platform == "instagram" %}
+
+                                        <i class="bi bi-instagram"></i>
+
+                                    {% elif social.platform == "youtube" %}
+
+                                        <i class="bi bi-youtube"></i>
+
+                                    {% elif social.platform == "twitter" %}
+
+                                        <i class="bi bi-twitter-x"></i>
+
+                                    {% else %}
+
+                                        <i class="bi bi-link-45deg"></i>
+
+                                    {% endif %}
+
+                                </a>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+                 CONTACT FORM
+            ====================================================== -->
+
+            <div class="col-lg-7 reveal">
+
+                <div class="glass-card contact-form-card h-100">
+
+
+                    <!-- DJANGO SUCCESS / ERROR MESSAGES -->
+
+                    {% if messages %}
+
+                        {% for message in messages %}
+
+                            <div
+                                class="contact-alert {% if message.tags %}{{ message.tags }}{% endif %}"
+                                role="alert"
+                            >
+
+                                {% if message.tags == "success" %}
+
+                                    <i class="bi bi-check-circle-fill"></i>
+
+                                {% elif message.tags == "error" %}
+
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+
+                                {% else %}
+
+                                    <i class="bi bi-info-circle-fill"></i>
+
+                                {% endif %}
+
+
+                                <span>
+                                    {{ message }}
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+
+                    <!-- FORM -->
+
+                    <form
+                        method="POST"
+                        action="#contact"
+                        novalidate
+                    >
+
+                        {% csrf_token %}
+
+
+                        <div class="row g-3">
+
+
+                            <!-- ================================
+                                 NAME
+                            ================================= -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="{{ contact_form.name.id_for_label }}"
+                                    class="form-label"
+                                >
+                                    Name
+                                    <span class="required-mark">*</span>
+                                </label>
+
+
+                                {{ contact_form.name }}
+
+
+                                {% if contact_form.name.errors %}
+
+                                    <div class="form-error">
+
+                                        {% for error in contact_form.name.errors %}
+
+                                            <div>
+                                                <i class="bi bi-exclamation-circle me-1"></i>
+                                                {{ error }}
+                                            </div>
+
+                                        {% endfor %}
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- ================================
+                                 EMAIL
+                            ================================= -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="{{ contact_form.email.id_for_label }}"
+                                    class="form-label"
+                                >
+                                    Email
+                                    <span class="required-mark">*</span>
+                                </label>
+
+
+                                {{ contact_form.email }}
+
+
+                                {% if contact_form.email.errors %}
+
+                                    <div class="form-error">
+
+                                        {% for error in contact_form.email.errors %}
+
+                                            <div>
+                                                <i class="bi bi-exclamation-circle me-1"></i>
+                                                {{ error }}
+                                            </div>
+
+                                        {% endfor %}
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- ================================
+                                 SUBJECT
+                            ================================= -->
+
+                            <div class="col-12">
+
+                                <label
+                                    for="{{ contact_form.subject.id_for_label }}"
+                                    class="form-label"
+                                >
+                                    Subject
+                                </label>
+
+
+                                {{ contact_form.subject }}
+
+
+                                {% if contact_form.subject.errors %}
+
+                                    <div class="form-error">
+
+                                        {% for error in contact_form.subject.errors %}
+
+                                            <div>
+                                                <i class="bi bi-exclamation-circle me-1"></i>
+                                                {{ error }}
+                                            </div>
+
+                                        {% endfor %}
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- ================================
+                                 MESSAGE
+                            ================================= -->
+
+                            <div class="col-12">
+
+                                <label
+                                    for="{{ contact_form.message.id_for_label }}"
+                                    class="form-label"
+                                >
+                                    Message
+                                    <span class="required-mark">*</span>
+                                </label>
+
+
+                                {{ contact_form.message }}
+
+
+                                {% if contact_form.message.errors %}
+
+                                    <div class="form-error">
+
+                                        {% for error in contact_form.message.errors %}
+
+                                            <div>
+                                                <i class="bi bi-exclamation-circle me-1"></i>
+                                                {{ error }}
+                                            </div>
+
+                                        {% endfor %}
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- ================================
+                                 NON-FIELD ERRORS
+                            ================================= -->
+
+                            {% if contact_form.non_field_errors %}
+
+                                <div class="col-12">
+
+                                    <div class="form-error">
+
+                                        {% for error in contact_form.non_field_errors %}
+
+                                            <div>
+                                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                                {{ error }}
+                                            </div>
+
+                                        {% endfor %}
+
+                                    </div>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- ================================
+                                 SUBMIT BUTTON
+                            ================================= -->
+
+                            <div class="col-12">
+
+                                <button
+                                    type="submit"
+                                    class="btn-gradient contact-submit-btn"
+                                >
+
+                                    <i class="bi bi-send-fill me-2"></i>
+
+                                    Send Message
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>

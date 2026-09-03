@@ -1,0 +1,105 @@
+{% extends "portfolio/base.html" %}
+
+
+{# =========================================================
+   PAGE TITLE
+========================================================= #}
+
+{% block title %}
+
+    {% if profile %}
+
+        {{ profile.full_name }} | {{ profile.professional_title }}
+
+    {% else %}
+
+        Professional Portfolio
+
+    {% endif %}
+
+{% endblock %}
+
+
+{# =========================================================
+   SEO META DESCRIPTION
+========================================================= #}
+
+{% block meta_description %}
+
+    {% if profile %}
+
+        {{ profile.short_intro|default:profile.professional_summary|striptags|truncatechars:160 }}
+
+    {% else %}
+
+        Professional engineering portfolio featuring projects, skills,
+        experience and education.
+
+    {% endif %}
+
+{% endblock %}
+
+
+{# =========================================================
+   MAIN PAGE CONTENT
+========================================================= #}
+
+{% block content %}
+
+
+    {# =====================================================
+       HERO / HOME
+    ====================================================== #}
+
+    {% include "portfolio/sections/hero.html" %}
+
+
+
+    {# =====================================================
+       ABOUT
+    ====================================================== #}
+
+    {% include "portfolio/sections/about.html" %}
+
+
+
+    {# =====================================================
+       EXPERIENCE
+    ====================================================== #}
+
+    {% include "portfolio/sections/experience.html" %}
+
+
+
+    {# =====================================================
+       PROJECTS
+    ====================================================== #}
+
+    {% include "portfolio/sections/projects.html" %}
+
+
+
+    {# =====================================================
+       SKILLS
+    ====================================================== #}
+
+    {% include "portfolio/sections/skills.html" %}
+
+
+
+    {# =====================================================
+       EDUCATION
+    ====================================================== #}
+
+    {% include "portfolio/sections/education.html" %}
+
+
+
+    {# =====================================================
+       CONTACT
+    ====================================================== #}
+
+    {% include "portfolio/sections/contact.html" %}
+
+
+{% endblock %}

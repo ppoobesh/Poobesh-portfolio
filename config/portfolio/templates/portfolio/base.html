@@ -1,0 +1,293 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <!-- =========================================================
+         BASIC META
+    ========================================================== -->
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+
+    <title>
+        {% block title %}
+            {% if profile %}
+                {{ profile.full_name }} | {{ profile.professional_title }}
+            {% else %}
+                Professional Portfolio
+            {% endif %}
+        {% endblock %}
+    </title>
+
+
+    <meta
+        name="description"
+        content="{% block meta_description %}{% if profile %}{{ profile.short_intro|default:profile.professional_summary|striptags|truncatechars:160 }}{% else %}Professional engineering portfolio featuring projects, skills, experience and education.{% endif %}{% endblock %}"
+    >
+
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
+
+    <meta
+        name="author"
+        content="{% if profile %}{{ profile.full_name }}{% else %}Portfolio Owner{% endif %}"
+    >
+
+
+    <link
+        rel="canonical"
+        href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}"
+    >
+
+
+    <!-- =========================================================
+         OPEN GRAPH
+    ========================================================== -->
+
+    <meta
+        property="og:type"
+        content="website"
+    >
+
+
+    <meta
+        property="og:title"
+        content="{% if profile %}{{ profile.full_name }} | {{ profile.professional_title }}{% else %}Professional Portfolio{% endif %}"
+    >
+
+
+    <meta
+        property="og:description"
+        content="{% if profile %}{{ profile.short_intro|default:profile.professional_summary|striptags|truncatechars:160 }}{% else %}Professional engineering portfolio featuring projects, skills, experience and education.{% endif %}"
+    >
+
+
+    <meta
+        property="og:url"
+        content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}"
+    >
+
+
+    <meta
+        property="og:site_name"
+        content="{% if profile %}{{ profile.full_name }} Portfolio{% else %}Professional Portfolio{% endif %}"
+    >
+
+
+    {% if profile and profile.profile_image %}
+
+        <meta
+            property="og:image"
+            content="{{ request.scheme }}://{{ request.get_host }}{{ profile.profile_image.url }}"
+        >
+
+        <meta
+            property="og:image:alt"
+            content="{{ profile.full_name }} profile photo"
+        >
+
+    {% endif %}
+
+
+    <!-- =========================================================
+         TWITTER / X CARD
+    ========================================================== -->
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+
+    <meta
+        name="twitter:title"
+        content="{% if profile %}{{ profile.full_name }} | {{ profile.professional_title }}{% else %}Professional Portfolio{% endif %}"
+    >
+
+
+    <meta
+        name="twitter:description"
+        content="{% if profile %}{{ profile.short_intro|default:profile.professional_summary|striptags|truncatechars:160 }}{% else %}Professional engineering portfolio featuring projects, skills, experience and education.{% endif %}"
+    >
+
+
+    {% if profile and profile.profile_image %}
+
+        <meta
+            name="twitter:image"
+            content="{{ request.scheme }}://{{ request.get_host }}{{ profile.profile_image.url }}"
+        >
+
+        <meta
+            name="twitter:image:alt"
+            content="{{ profile.full_name }} profile photo"
+        >
+
+    {% endif %}
+
+
+    <!-- =========================================================
+         STRUCTURED DATA
+    ========================================================== -->
+
+    {% if profile %}
+
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "{{ profile.full_name|escapejs }}",
+            "jobTitle": "{{ profile.professional_title|escapejs }}",
+            "url": "{{ request.scheme }}://{{ request.get_host }}"{% if profile.email %},
+            "email": "{{ profile.email|escapejs }}"{% endif %}{% if profile.profile_image %},
+            "image": "{{ request.scheme }}://{{ request.get_host }}{{ profile.profile_image.url }}"{% endif %}{% if profile.location %},
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "{{ profile.location|escapejs }}"
+            }{% endif %}
+        }
+        </script>
+
+    {% endif %}
+
+
+    <!-- =========================================================
+         BOOTSTRAP
+    ========================================================== -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- =========================================================
+         BOOTSTRAP ICONS
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    >
+
+
+    <!-- =========================================================
+         GOOGLE FONTS
+    ========================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =========================================================
+         PORTFOLIO CSS
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{% static 'portfolio/css/style.css' %}"
+    >
+
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         NAVBAR
+    ========================================================== -->
+
+    {% include "portfolio/sections/navbar.html" %}
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================== -->
+
+    <main>
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    {% include "portfolio/sections/footer.html" %}
+
+
+    <!-- =========================================================
+         BACK TO TOP
+    ========================================================== -->
+
+    <button
+        id="backToTop"
+        type="button"
+        aria-label="Back to top"
+    >
+
+        <i
+            class="bi bi-arrow-up"
+            aria-hidden="true"
+        ></i>
+
+    </button>
+
+
+    <!-- =========================================================
+         BOOTSTRAP JS
+    ========================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+
+    <!-- =========================================================
+         PORTFOLIO JS
+    ========================================================== -->
+
+    <script
+        src="{% static 'portfolio/js/main.js' %}"
+    ></script>
+
+
+    {% block extra_js %}
+    {% endblock %}
+
+</body>
+
+</html>

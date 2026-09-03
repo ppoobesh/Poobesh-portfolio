@@ -1,0 +1,295 @@
+<section id="home" aria-labelledby="hero-heading">
+
+    <div class="container">
+
+        <div class="row align-items-center g-5">
+
+            <!-- =====================================================
+                 HERO CONTENT
+            ====================================================== -->
+
+            <div class="col-lg-7 reveal">
+
+                <div class="hero-badge">
+
+                    <span
+                        class="status-dot"
+                        aria-hidden="true"
+                    ></span>
+
+                    Available for opportunities
+
+                </div>
+
+
+                {% if profile %}
+
+                    <p class="text-secondary mb-2">
+                        Hello, I'm
+                    </p>
+
+
+                    <h1
+                        id="hero-heading"
+                        class="hero-title"
+                    >
+                        {{ profile.full_name }}
+                    </h1>
+
+
+                    <p class="hero-role">
+
+                        <span class="gradient-text">
+                            {{ profile.professional_title }}
+                        </span>
+
+                    </p>
+
+
+                    {% if profile.short_intro %}
+
+                        <p class="hero-intro">
+                            {{ profile.short_intro }}
+                        </p>
+
+                    {% endif %}
+
+
+                {% else %}
+
+                    <h1
+                        id="hero-heading"
+                        class="hero-title"
+                    >
+
+                        Professional
+
+                        <span class="gradient-text">
+                            Portfolio
+                        </span>
+
+                    </h1>
+
+                {% endif %}
+
+
+                <!-- =================================================
+                     PRIMARY ACTIONS
+                ================================================== -->
+
+                <div class="hero-actions">
+
+                    <a
+                        href="#projects"
+                        class="btn-gradient"
+                    >
+
+                        <i
+                            class="bi bi-grid"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span class="ms-2">
+                            View Projects
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="#contact"
+                        class="btn-outline-modern"
+                    >
+
+                        <i
+                            class="bi bi-send"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span class="ms-2">
+                            Contact Me
+                        </span>
+
+                    </a>
+
+
+                    {% if resume and resume.resume_file %}
+
+                        <a
+                            href="{{ resume.resume_file.url }}"
+                            class="btn-outline-modern"
+                            download
+                        >
+
+                            <i
+                                class="bi bi-file-earmark-arrow-down"
+                                aria-hidden="true"
+                            ></i>
+
+                            <span class="ms-2">
+                                Download Resume
+                            </span>
+
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- =================================================
+                     SOCIAL LINKS
+                ================================================== -->
+
+                {% if social_links %}
+
+                    <div
+                        class="d-flex flex-wrap gap-2 mt-4"
+                        aria-label="Social links"
+                    >
+
+                        {% for social in social_links %}
+
+                            <a
+                                href="{{ social.url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="btn-outline-modern"
+                                aria-label="{{ social.display_name|default:social.get_platform_display }}"
+                            >
+
+                                {% if social.icon %}
+
+                                    <i
+                                        class="{{ social.icon }}"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                {% elif social.platform == "github" %}
+
+                                    <i
+                                        class="bi bi-github"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                {% elif social.platform == "linkedin" %}
+
+                                    <i
+                                        class="bi bi-linkedin"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                {% elif social.platform == "instagram" %}
+
+                                    <i
+                                        class="bi bi-instagram"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                {% elif social.platform == "youtube" %}
+
+                                    <i
+                                        class="bi bi-youtube"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                {% elif social.platform == "twitter" %}
+
+                                    <i
+                                        class="bi bi-twitter-x"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                {% elif social.platform == "website" %}
+
+                                    <i
+                                        class="bi bi-globe"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                {% else %}
+
+                                    <i
+                                        class="bi bi-link-45deg"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                {% endif %}
+
+
+                                <span class="ms-2">
+
+                                    {% if social.display_name %}
+
+                                        {{ social.display_name }}
+
+                                    {% else %}
+
+                                        {{ social.get_platform_display }}
+
+                                    {% endif %}
+
+                                </span>
+
+                            </a>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =====================================================
+                 PROFILE IMAGE
+            ====================================================== -->
+
+            <div class="col-lg-5">
+
+                <div class="profile-wrapper reveal">
+
+                    <div
+                        class="profile-glow"
+                        aria-hidden="true"
+                    ></div>
+
+
+                    <div class="profile-image-container">
+
+                        {% if profile and profile.profile_image %}
+
+                            <img
+                                src="{{ profile.profile_image.url }}"
+                                alt="{{ profile.full_name }} profile photo"
+                                class="profile-image"
+                                width="800"
+                                height="800"
+                                fetchpriority="high"
+                            >
+
+                        {% else %}
+
+                            <div
+                                class="profile-placeholder"
+                                aria-hidden="true"
+                            >
+
+                                <i class="bi bi-person"></i>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>

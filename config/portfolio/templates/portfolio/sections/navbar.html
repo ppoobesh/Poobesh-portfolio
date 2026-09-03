@@ -1,0 +1,184 @@
+<nav
+    id="mainNavbar"
+    class="navbar navbar-expand-lg navbar-dark fixed-top"
+>
+
+    <div class="container">
+
+        <!-- BRAND -->
+
+        <a
+            class="navbar-brand"
+            href="#home"
+        >
+
+            {% if profile %}
+
+                {{ profile.full_name|slice:":1" }}
+
+            {% else %}
+
+                P
+
+            {% endif %}
+
+            <span class="brand-dot">.</span>
+
+        </a>
+
+
+        <!-- MOBILE MENU BUTTON -->
+
+        <button
+            class="navbar-toggler border-0"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarMenu"
+            aria-controls="navbarMenu"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+
+            <i class="bi bi-list fs-2"></i>
+
+        </button>
+
+
+        <!-- NAVIGATION -->
+
+        <div
+            class="collapse navbar-collapse"
+            id="navbarMenu"
+        >
+
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+
+
+                <!-- HOME -->
+
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="#home"
+                    >
+                        Home
+                    </a>
+
+                </li>
+
+
+                <!-- ABOUT -->
+
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="#about"
+                    >
+                        About
+                    </a>
+
+                </li>
+
+
+                <!-- EXPERIENCE -->
+
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="#experience"
+                    >
+                        Experience
+                    </a>
+
+                </li>
+
+
+                <!-- PROJECTS -->
+
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="#projects"
+                    >
+                        Projects
+                    </a>
+
+                </li>
+
+
+                <!-- SKILLS -->
+
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="#skills"
+                    >
+                        Skills
+                    </a>
+
+                </li>
+
+
+                <!-- EDUCATION -->
+
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="#education"
+                    >
+                        Education
+                    </a>
+
+                </li>
+
+
+                <!-- CONTACT -->
+
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="#contact"
+                    >
+                        Contact
+                    </a>
+
+                </li>
+
+
+                <!-- THEME BUTTON -->
+
+                <li
+                    class="nav-item ms-lg-2 mt-3 mt-lg-0"
+                >
+
+                    <button
+                        id="themeToggle"
+                        class="theme-btn"
+                        type="button"
+                        aria-label="Toggle theme"
+                    >
+
+                        <i
+                            id="themeIcon"
+                            class="bi bi-moon-stars-fill"
+                        ></i>
+
+                    </button>
+
+                </li>
+
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</nav>
