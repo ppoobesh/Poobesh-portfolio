@@ -1,197 +1,80 @@
-<section id="projects">
-
+<section id="projects" class="bento-projects">
     <div class="container">
-
-        <div class="text-center reveal">
-
-            <div class="section-label">
-                Work
-            </div>
-
-            <h2 class="section-title">
-                Projects
-            </h2>
-
-            <p class="section-description">
-                Some of the projects and applications I have worked on.
-            </p>
-
+        
+        <div class="section-meta-header">
+            <span class="section-badge font-monospace">./work_and_code</span>
+            <h2 class="section-h2">Engineered Projects</h2>
+            <p class="section-sub">Production builds, architectural solutions, and personal software experiments.</p>
         </div>
 
-
-        <!-- FILTER BUTTONS -->
-
-        <div class="project-filters reveal">
-
-            <button
-                type="button"
-                class="project-filter-btn active"
-                data-filter="all"
-            >
-                All
+        <div class="interactive-filter-bar">
+            <button type="button" class="project-filter-btn active" data-filter="all">
+                <i class="bi bi-code-square me-1"></i> All Work
             </button>
-
-            <button
-                type="button"
-                class="project-filter-btn"
-                data-filter="featured"
-            >
-                Featured
+            <button type="button" class="project-filter-btn" data-filter="featured">
+                <i class="bi bi-star-fill me-1"></i> Featured Only
             </button>
-
         </div>
-
-
-        <!-- PROJECT GRID -->
 
         <div class="row g-4" id="projectGrid">
-
             {% for project in projects %}
-
-                <div
-                    class="col-md-6 col-xl-4 reveal project-item"
-                    data-featured="{% if project.featured %}true{% else %}false{% endif %}"
-                >
-
-                    <div class="project-card h-100">
-
-                        <div class="project-image-wrapper">
-
+                <div class="col-md-6 col-lg-4 project-item" data-featured="{% if project.featured %}true{% else %}false{% endif %}">
+                    <article class="bento-card project-card-v2 h-100">
+                        
+                        <div class="project-display-box">
                             {% if project.image %}
-
-                                <img
-                                    src="{{ project.image.url }}"
-                                    alt="{{ project.title }}"
-                                    class="project-image"
-                                    loading="lazy"
-                                >
-
+                                <img src="{{ project.image.url }}" alt="{{ project.title }}" class="project-img-thumb" loading="lazy">
                             {% else %}
-
-                                <div class="project-placeholder">
-
-                                    <i class="bi bi-code-slash"></i>
-
+                                <div class="project-code-glyph-card">
+                                    <div class="glyph-brackets font-monospace">&lt; / &gt;</div>
+                                    <span class="glyph-sub font-monospace">source code</span>
                                 </div>
-
                             {% endif %}
-
-
+                            
                             {% if project.featured %}
-
-                                <span class="featured-badge">
-
-                                    <i class="bi bi-star-fill"></i>
-
-                                    Featured
-
+                                <span class="project-tag-featured">
+                                    <i class="bi bi-lightning-charge-fill"></i> Featured
                                 </span>
-
                             {% endif %}
-
                         </div>
 
-
-                        <div class="project-content">
-
-                            <h3 class="project-title">
-
-                                {{ project.title }}
-
-                            </h3>
-
-
-                            <p class="project-description">
-
-                                {{ project.short_description }}
-
-                            </p>
-
+                        <div class="project-body-v2">
+                            <h3 class="project-h3">{{ project.title }}</h3>
+                            <p class="project-desc">{{ project.short_description }}</p>
 
                             {% if project.technologies %}
-
-                                <div class="project-tech">
-
-                                    <i class="bi bi-stack"></i>
-
-                                    <span>
-                                        {{ project.technologies }}
-                                    </span>
-
+                                <div class="tech-stack-row font-monospace">
+                                    <i class="bi bi-terminal"></i>
+                                    <span>{{ project.technologies }}</span>
                                 </div>
-
                             {% endif %}
 
-
-                            <div class="project-actions">
-
+                            <div class="project-footer-actions">
                                 {% if project.github_url %}
-
-                                    <a
-                                        href="{{ project.github_url }}"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="btn-outline-modern"
-                                    >
-
-                                        <i class="bi bi-github"></i>
-
-                                        GitHub
-
+                                    <a href="{{ project.github_url }}" target="_blank" rel="noopener noreferrer" class="action-pill-btn">
+                                        <i class="bi bi-github"></i> Code
                                     </a>
-
                                 {% endif %}
-
-
                                 {% if project.demo_url %}
-
-                                    <a
-                                        href="{{ project.demo_url }}"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="btn-gradient"
-                                    >
-
-                                        <i class="bi bi-box-arrow-up-right"></i>
-
-                                        Live Demo
-
+                                    <a href="{{ project.demo_url }}" target="_blank" rel="noopener noreferrer" class="action-pill-btn live-btn">
+                                        <i class="bi bi-box-arrow-up-right"></i> Launch
                                     </a>
-
                                 {% endif %}
-
                             </div>
-
                         </div>
 
-                    </div>
-
+                    </article>
                 </div>
-
             {% empty %}
-
                 <div class="col-12">
-
-                    <div class="glass-card text-center">
-
-                        <i class="bi bi-folder2-open fs-1 mb-3"></i>
-
-                        <h4>
-                            No projects added yet
-                        </h4>
-
-                        <p class="text-secondary mb-0">
-                            Projects added through Django Admin will appear here.
-                        </p>
-
+                    <div class="bento-card text-center py-5">
+                        <i class="bi bi-code-slash display-4 mb-2 text-muted"></i>
+                        <h4>No projects added yet</h4>
+                        <p class="text-secondary">Projects added in Django Admin will show up here automatically.</p>
                     </div>
-
                 </div>
-
             {% endfor %}
-
         </div>
 
     </div>
-
 </section>

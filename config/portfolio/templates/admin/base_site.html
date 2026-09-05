@@ -2,41 +2,32 @@
 {% load static %}
 
 {% block title %}
-    Portfolio Admin
+    {% if subtitle %}{{ subtitle }} | {% endif %}Portfolio Admin Console
 {% endblock %}
 
 {% block branding %}
-
 <div class="custom-admin-brand">
-
     <div class="custom-admin-logo">
-        P
+        <span class="logo-symbol">&gt;_</span>
     </div>
-
-    <div>
+    <div class="brand-text-stack">
         <h1 id="site-name">
             <a href="{% url 'admin:index' %}">
-                Portfolio Administration
+                Portfolio <span class="accent-brand">Console</span>
             </a>
         </h1>
-
-        <small class="custom-admin-subtitle">
-            Content Management Dashboard
-        </small>
+        <div class="custom-admin-subtitle font-monospace">
+            <span class="status-indicator"></span>
+            <span>CMS Environment // v2.6</span>
+        </div>
     </div>
-
 </div>
-
 {% endblock %}
 
-
 {% block extrastyle %}
-
 {{ block.super }}
-
-<link
-    rel="stylesheet"
-    href="{% static 'portfolio/css/admin.css' %}"
->
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'portfolio/css/admin.css' %}">
 {% endblock %}

@@ -37,15 +37,6 @@ ALLOWED_HOSTS = [host.strip()
     if host.strip()
     ]
 
-TELEGRAM_BOT_TOKEN = os.getenv(
-    "TELEGRAM_BOT_TOKEN",
-    ""
-)
-
-TELEGRAM_CHAT_ID = os.getenv(
-    "TELEGRAM_CHAT_ID",
-    ""
-)
 
 
 # Application definition
@@ -151,10 +142,32 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
 MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+    "default": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": os.getenv("MAIL_HOST", "smtp.gmail.com"),
+            "port": int(os.getenv("MAIL_PORT", "587")),
+            "username": os.getenv("MAIL_USERNAME", ""),
+            "password": os.getenv("MAIL_PASSWORD", ""),
+            "use_tls": os.getenv(
+                "MAIL_USE_TLS",
+                "True"
+            ).lower() == "true",
+            "timeout": 10,
+        },
     },
 }
+
+
+NOTIFICATION_EMAIL = os.getenv(
+    "NOTIFICATION_EMAIL",
+    ""
+)
+
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    os.getenv("MAIL_USERNAME", "")
+)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

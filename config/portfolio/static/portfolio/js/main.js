@@ -1,956 +1,248 @@
 document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
 
     // =====================================================
-    // ELEMENTS
+    // 1. DUAL-THEME ENGINE
     // =====================================================
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    function setTheme(newTheme) {
+        document.documentElement.setAttribute("data-theme", newTheme);
+        localStorage.setItem("site_theme", newTheme);
+    }
 
-    const navbar = document.getElementById("mainNavbar");
-    const navbarMenu = document.getElementById("navbarMenu");
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener("click", function () {
+            const current = document.documentElement.getAttribute("data-theme") || "dark";
+            const target = current === "dark" ? "light" : "dark";
+            setTheme(target);
+        });
+    }
 
-    const navLinks = document.querySelectorAll(
-        '#mainNavbar .nav-link[href^="#"]'
-    );
-
-    const sections = document.querySelectorAll(
-        "main section[id]"
-    );
-
+    // =====================================================
+    // 2. BACK TO TOP
+    // =====================================================
     const backToTop = document.getElementById("backToTop");
+    window.addEventListener("scroll", function () {
+        if (window.scrollY > 350) {
+            backToTop?.classList.add("show");
+        } else {
+            backToTop?.classList.remove("show");
+        }
+    }, { passive: true });
 
-    const themeToggle = document.getElementById("themeToggle");
-    const themeIcon = document.getElementById("themeIcon");
-
+    if (backToTop) {
+        backToTop.addEventListener("click", function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
 
     // =====================================================
-    // SMOOTH NAVIGATION
+    // 3. ULTRA-SMOOTH SIDE-HIDE PROJECT FILTER
     // =====================================================
+    const filterBtns = document.querySelectorAll(".project-filter-btn");
+    const projectCards = Array.from(document.querySelectorAll(".project-item"));
+    let isTransitioning = false;
 
-    navLinks.forEach(function (link) {
+    filterBtns.forEach((btn) => {
+        btn.addEventListener("click", function () {
+            if (this.classList.contains("active") || isTransitioning) return;
 
-        link.addEventListener("click", function (event) {
+            isTransitioning = true;
+            filterBtns.forEach((b) => b.classList.remove("active"));
+            this.classList.add("active");
 
-            const targetId = this.getAttribute("href");
+            const filter = this.getAttribute("data-filter");
 
-            if (!targetId || targetId === "#") {
-                return;
-            }
+            // Slide exiting cards out to the left
+            projectCards.forEach((card) => {
+                const isFeatured = card.getAttribute("data-featured") === "true";
+                const willStay = filter === "all" || (filter === "featured" && isFeatured);
 
-            const targetSection =
-                document.querySelector(targetId);
-
-            if (!targetSection) {
-                return;
-            }
-
-            event.preventDefault();
-
-            const navbarHeight =
-                navbar ? navbar.offsetHeight : 0;
-
-            const targetPosition =
-                targetSection.getBoundingClientRect().top +
-                window.scrollY -
-                navbarHeight -
-                10;
-
-            window.scrollTo({
-                top: targetPosition,
-                behavior: "smooth"
+                if (!willStay) {
+                    card.classList.remove("slide-active");
+                    card.classList.add("slide-out-left");
+                }
             });
 
+            // Swap layout and slide matching cards in from the right
+            setTimeout(() => {
+                projectCards.forEach((card, index) => {
+                    const isFeatured = card.getAttribute("data-featured") === "true";
+                    const willShow = filter === "all" || (filter === "featured" && isFeatured);
 
-            // Close Bootstrap mobile navbar
-            if (
-                navbarMenu &&
-                navbarMenu.classList.contains("show")
-            ) {
+                    if (willShow) {
+                        card.style.display = "";
+                        card.classList.remove("slide-out-left");
+                        card.classList.add("slide-prep-right");
 
-                const collapse =
-                    bootstrap.Collapse.getOrCreateInstance(
-                        navbarMenu
-                    );
+                        void card.offsetWidth; // Reflow
 
-                collapse.hide();
-            }
+                        setTimeout(() => {
+                            card.classList.remove("slide-prep-right");
+                            card.classList.add("slide-active");
+                        }, index * 40);
+                    } else {
+                        card.style.display = "none";
+                    }
+                });
 
+                setTimeout(() => {
+                    isTransitioning = false;
+                }, 300);
+            }, 260);
         });
-
     });
 
     // =====================================================
-    // PREMIUM PROJECT FILTER - FLIP LAYOUT
+    // 4. INTERACTIVE POKE-AROUND TERMINAL CONSOLE
     // =====================================================
+    const cliInput = document.getElementById("cliInput");
+    const terminalLog = document.getElementById("terminalLog");
 
-    const projectFilterButtons =
-        document.querySelectorAll(".project-filter-btn");
-
-    const projectItems =
-        Array.from(
-            document.querySelectorAll(".project-item")
-        );
-
-    let projectFilterRunning = false;
-
-
-    function shouldShowProject(project, filter) {
-
-        if (filter === "all") {
-            return true;
-        }
-
-        if (filter === "featured") {
-
-            return (
-                project.getAttribute("data-featured")
-                === "true"
-            );
-
-        }
-
-        return true;
+    function appendTerminal(htmlContent) {
+        if (!terminalLog) return;
+        const entry = document.createElement("div");
+        entry.className = "terminal-entry";
+        entry.innerHTML = htmlContent;
+        terminalLog.appendChild(entry);
+        terminalLog.scrollTop = terminalLog.scrollHeight;
     }
 
-
-    // =====================================================
-    // GET CURRENT PROJECT POSITIONS
-    // =====================================================
-
-    function getProjectPositions() {
-
-        const positions = new Map();
-
-        projectItems.forEach(function (project) {
-
-            if (
-                !project.classList.contains(
-                    "project-hidden"
-                )
-            ) {
-
-                positions.set(
-                    project,
-                    project.getBoundingClientRect()
-                );
-
-            }
-
-        });
-
-        return positions;
-    }
-
-
-    // =====================================================
-    // RUN FLIP ANIMATION
-    // =====================================================
-
-    function animateProjectFilter(selectedFilter) {
-
-        if (projectFilterRunning) {
-            return;
+    // Interactive jump trigger for terminal action links
+    window.jumpToSection = function (sectionId) {
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.scrollIntoView({ behavior: "smooth" });
         }
-
-        projectFilterRunning = true;
-
-
-        // ---------------------------------------------
-        // STEP 1
-        // Record current card positions
-        // ---------------------------------------------
-
-        const firstPositions =
-            getProjectPositions();
-
-
-        // ---------------------------------------------
-        // STEP 2
-        // Find cards leaving and entering
-        // ---------------------------------------------
-
-        const leavingProjects = [];
-        const enteringProjects = [];
-        const stayingProjects = [];
-
-
-        projectItems.forEach(function (project) {
-
-            const shouldShow =
-                shouldShowProject(
-                    project,
-                    selectedFilter
-                );
-
-            const currentlyHidden =
-                project.classList.contains(
-                    "project-hidden"
-                );
-
-
-            if (
-                shouldShow &&
-                currentlyHidden
-            ) {
-
-                enteringProjects.push(
-                    project
-                );
-
-            }
-
-            else if (
-                !shouldShow &&
-                !currentlyHidden
-            ) {
-
-                leavingProjects.push(
-                    project
-                );
-
-            }
-
-            else if (
-                shouldShow &&
-                !currentlyHidden
-            ) {
-
-                stayingProjects.push(
-                    project
-                );
-
-            }
-
-        });
-
-
-        // ---------------------------------------------
-        // STEP 3
-        // Fade out cards that are leaving
-        // ---------------------------------------------
-
-        leavingProjects.forEach(
-            function (project) {
-
-                project.classList.add(
-                    "project-leaving"
-                );
-
-            }
-        );
-
-
-        // ---------------------------------------------
-        // STEP 4
-        // Wait for fade-out
-        // ---------------------------------------------
-
-        setTimeout(function () {
-
-
-            // Hide leaving cards
-
-            leavingProjects.forEach(
-                function (project) {
-
-                    project.classList.add(
-                        "project-hidden"
-                    );
-
-                    project.classList.remove(
-                        "project-leaving"
-                    );
-
-                }
-            );
-
-
-            // -----------------------------------------
-            // Prepare entering cards BEFORE showing
-            // -----------------------------------------
-
-            enteringProjects.forEach(
-                function (project) {
-
-                    project.classList.add(
-                        "project-entering"
-                    );
-
-                    project.classList.remove(
-                        "project-hidden"
-                    );
-
-                }
-            );
-
-
-            // Force browser layout calculation
-
-            void document.body.offsetHeight;
-
-
-            // -----------------------------------------
-            // Record new positions
-            // -----------------------------------------
-
-            const lastPositions =
-                getProjectPositions();
-
-
-            // -----------------------------------------
-            // FLIP existing cards
-            // -----------------------------------------
-
-            projectItems.forEach(function (project) {
-
-                if (
-                    project.classList.contains(
-                        "project-hidden"
-                    )
-                ) {
-                    return;
-                }
-
-
-                const first =
-                    firstPositions.get(project);
-
-                const last =
-                    lastPositions.get(project);
-
-
-                if (!first || !last) {
-                    return;
-                }
-
-
-                const deltaX =
-                    first.left -
-                    last.left;
-
-                const deltaY =
-                    first.top -
-                    last.top;
-
-
-                if (
-                    deltaX !== 0 ||
-                    deltaY !== 0
-                ) {
-
-                    project.style.transition =
-                        "none";
-
-                    project.style.transform =
-                        `translate3d(
-                        ${deltaX}px,
-                        ${deltaY}px,
-                        0
-                    )`;
-
-                }
-
-            });
-
-
-            // Force transform state to render
-
-            void document.body.offsetHeight;
-
-
-            // -----------------------------------------
-            // Animate cards into new positions
-            // -----------------------------------------
-
-            requestAnimationFrame(function () {
-
-                requestAnimationFrame(function () {
-
-
-                    projectItems.forEach(
-                        function (project) {
-
-                            if (
-                                project.classList.contains(
-                                    "project-hidden"
-                                )
-                            ) {
-                                return;
-                            }
-
-
-                            project.style.transition =
-                                "";
-
-                            project.style.transform =
-                                "";
-
-                        }
-                    );
-
-
-                    // ---------------------------------
-                    // Animate entering cards
-                    // ---------------------------------
-
-                    enteringProjects.forEach(
-                        function (project, index) {
-
-                            setTimeout(function () {
-
-                                project.classList.remove(
-                                    "project-entering"
-                                );
-
-                                project.classList.add(
-                                    "project-visible"
-                                );
-
-                            }, index * 70);
-
-                        }
-                    );
-
-
-                    // ---------------------------------
-                    // Remove helper visible class
-                    // ---------------------------------
-
-                    setTimeout(function () {
-
-                        enteringProjects.forEach(
-                            function (project) {
-
-                                project.classList.remove(
-                                    "project-visible"
-                                );
-
-                            }
-                        );
-
-
-                        projectFilterRunning = false;
-
-                    }, 700);
-
-                });
-
-            });
-
-        }, 320);
-
-    }
-
-
-    // =====================================================
-    // FILTER BUTTON EVENTS
-    // =====================================================
-
-    projectFilterButtons.forEach(
-        function (button) {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    const selectedFilter =
-                        this.getAttribute(
-                            "data-filter"
-                        );
-
-
-                    if (
-                        this.classList.contains(
-                            "active"
-                        )
-                    ) {
-                        return;
-                    }
-
-
-                    projectFilterButtons.forEach(
-                        function (filterButton) {
-
-                            filterButton.classList.remove(
-                                "active"
-                            );
-
-                        }
-                    );
-
-
-                    this.classList.add(
-                        "active"
-                    );
-
-
-                    animateProjectFilter(
-                        selectedFilter
-                    );
-
-                }
-            );
-
+    };
+
+    function runCliCommand(rawText) {
+        const cmd = rawText.trim().toLowerCase();
+        appendTerminal(`<div class="log-cmd-echo"><span class="prompt-sym">$</span> ${rawText}</div>`);
+
+        if (!cmd) return;
+
+        switch (cmd) {
+            case "help":
+            case "-help":
+            case "--help":
+            case "?":
+                appendTerminal(`
+                    <div class="terminal-response-box">
+                        <div class="resp-title">Available Commands:</div>
+                        <div class="resp-item"><code>skills</code> — Technical stack summary</div>
+                        <div class="resp-item"><code>projects</code> — Portfolio builds snapshot</div>
+                        <div class="resp-item"><code>experience</code> — Career overview</div>
+                        <div class="resp-item"><code>education</code> — Academic credentials</div>
+                        <div class="resp-item"><code>training</code> — Active technical training</div>
+                        <div class="resp-item"><code>contact</code> — Direct communication</div>
+                        <div class="resp-item"><code>whoami</code> — Identity overview</div>
+                        <div class="resp-item"><code>clear</code> — Wipe console log</div>
+                    </div>
+                `);
+                break;
+
+            case "clear":
+            case "cls":
+                if (terminalLog) terminalLog.innerHTML = "";
+                break;
+
+            case "whoami":
+                const bioName = document.querySelector(".hero-headline")?.textContent.replace(/\s+/g, ' ').trim() || "Developer";
+                const bioRole = document.querySelector(".console-text")?.textContent.trim() || "Software Engineer";
+                appendTerminal(`
+                    <div class="terminal-response-box">
+                        <div><strong>${bioName}</strong> — <span class="text-teal">${bioRole}</span></div>
+                        <div class="text-muted small mt-1">Specialized in building full-stack applications with robust backend systems.</div>
+                        <div class="mt-2"><button type="button" onclick="jumpToSection('about')" class="term-btn">View Full Bio ↗</button></div>
+                    </div>
+                `);
+                break;
+
+            case "skills":
+            case "stack":
+                appendTerminal(`
+                    <div class="terminal-response-box">
+                        <div class="small">Core engineering stack focused on <strong>Python</strong>, <strong>Django</strong>, <strong>Flask</strong>, relational databases (<strong>Oracle/SQL</strong>), and modern reactive frontends.</div>
+                        <div class="mt-2"><button type="button" onclick="jumpToSection('skills')" class="term-btn">View Full Skills ↗</button></div>
+                    </div>
+                `);
+                break;
+
+            case "projects":
+            case "work":
+                const projectCount = document.querySelectorAll(".project-card-v2").length || "production";
+                appendTerminal(`
+                    <div class="terminal-response-box">
+                        <div class="small">Engineered ${projectCount} applications spanning booking platforms, library management, and backend automation systems.</div>
+                        <div class="mt-2"><button type="button" onclick="jumpToSection('projects')" class="term-btn">View All Projects ↗</button></div>
+                    </div>
+                `);
+                break;
+
+            case "experience":
+            case "exp":
+                appendTerminal(`
+                    <div class="terminal-response-box">
+                        <div class="small">Hands-on software development involving schema architecture, API endpoints, and scalable asynchronous workflows.</div>
+                        <div class="mt-2"><button type="button" onclick="jumpToSection('experience')" class="term-btn">View Experience ↗</button></div>
+                    </div>
+                `);
+                break;
+
+            case "education":
+            case "edu":
+                const firstEdu = document.querySelector(".edu-degree")?.textContent.trim() || "Engineering Degree";
+                const firstInst = document.querySelector(".edu-institution")?.textContent.trim() || "University";
+                appendTerminal(`
+                    <div class="terminal-response-box">
+                        <div class="small">Formal academic background: <strong>${firstEdu}</strong> at ${firstInst}.</div>
+                        <div class="mt-2"><button type="button" onclick="jumpToSection('education')" class="term-btn">View Credentials ↗</button></div>
+                    </div>
+                `);
+                break;
+
+            case "training":
+            case "courses":
+                appendTerminal(`
+                    <div class="terminal-response-box">
+                        <div class="small">Continuous technical training in Python full-stack engineering, containerization (Docker), and asynchronous processing.</div>
+                        <div class="mt-2"><button type="button" onclick="jumpToSection('training')" class="term-btn">View Courses ↗</button></div>
+                    </div>
+                `);
+                break;
+
+            case "contact":
+            case "email":
+                const directEmail = document.querySelector(".bento-info-tile[href^='mailto:']")?.getAttribute("href")?.replace("mailto:", "") || "Available on form";
+                appendTerminal(`
+                    <div class="terminal-response-box">
+                        <div class="small">Reach out directly via email at <strong class="text-teal">${directEmail}</strong>.</div>
+                        <div class="mt-2"><button type="button" onclick="jumpToSection('contact')" class="term-btn">Open Contact Form ↗</button></div>
+                    </div>
+                `);
+                break;
+
+            default:
+                appendTerminal(`
+                    <div class="text-danger small font-monospace">
+                        bash: command not found: "${cmd}". Type "<code>help</code>" to view all available commands.
+                    </div>
+                `);
+                break;
+        
         }
-    );
-
-
-
-    // =====================================================
-    // ACTIVE NAVIGATION
-    // =====================================================
-
-    function updateActiveNavigation() {
-
-        const navbarHeight =
-            navbar ? navbar.offsetHeight : 0;
-
-        const scrollPosition =
-            window.scrollY +
-            navbarHeight +
-            120;
-
-        let currentSection = "";
-
-
-        sections.forEach(function (section) {
-
-            const sectionTop =
-                section.offsetTop;
-
-            const sectionHeight =
-                section.offsetHeight;
-
-            if (
-                scrollPosition >= sectionTop &&
-                scrollPosition <
-                sectionTop + sectionHeight
-            ) {
-
-                currentSection =
-                    section.getAttribute("id");
-
-            }
-
-        });
-
-
-        navLinks.forEach(function (link) {
-
-            link.classList.remove("active");
-
-
-            if (
-                link.getAttribute("href") ===
-                "#" + currentSection
-            ) {
-
-                link.classList.add("active");
-
-            }
-
-        });
-
     }
 
-
-    window.addEventListener(
-        "scroll",
-        updateActiveNavigation
-    );
-
-    window.addEventListener(
-        "resize",
-        updateActiveNavigation
-    );
-
-    updateActiveNavigation();
-
-
-    // =====================================================
-    // NAVBAR SCROLLED STATE
-    // =====================================================
-
-    function updateNavbar() {
-
-        if (!navbar) {
-            return;
-        }
-
-        if (window.scrollY > 30) {
-
-            navbar.classList.add(
-                "navbar-scrolled"
-            );
-
-        } else {
-
-            navbar.classList.remove(
-                "navbar-scrolled"
-            );
-
-        }
-
-    }
-
-
-    window.addEventListener(
-        "scroll",
-        updateNavbar
-    );
-
-    updateNavbar();
-
-
-    // =====================================================
-    // REVEAL ANIMATIONS
-    // =====================================================
-
-    const revealElements =
-        document.querySelectorAll(".reveal");
-
-
-    if ("IntersectionObserver" in window) {
-
-        const revealObserver =
-            new IntersectionObserver(
-                function (entries, observer) {
-
-                    entries.forEach(
-                        function (entry) {
-
-                            if (entry.isIntersecting) {
-
-                                entry.target
-                                    .classList
-                                    .add("visible");
-
-                                observer.unobserve(
-                                    entry.target
-                                );
-
-                            }
-
-                        }
-                    );
-
-                },
-                {
-                    threshold: 0.12
-                }
-            );
-
-
-        revealElements.forEach(
-            function (element) {
-
-                revealObserver.observe(
-                    element
-                );
-
-            }
-        );
-
-    } else {
-
-        revealElements.forEach(
-            function (element) {
-
-                element.classList.add(
-                    "visible"
-                );
-
-            }
-        );
-
-    }
-
-
-    // =====================================================
-    // SKILL PROGRESS
-    // =====================================================
-
-    const skillCards =
-        document.querySelectorAll(".skill-card");
-
-
-    if ("IntersectionObserver" in window) {
-
-        const skillObserver =
-            new IntersectionObserver(
-                function (entries, observer) {
-
-                    entries.forEach(
-                        function (entry) {
-
-                            if (
-                                entry.isIntersecting
-                            ) {
-
-                                const progressBar =
-                                    entry.target
-                                        .querySelector(
-                                            ".skill-progress"
-                                        );
-
-                                if (progressBar) {
-
-                                    let width =
-                                        parseInt(
-                                            progressBar
-                                                .dataset
-                                                .width,
-                                            10
-                                        );
-
-                                    if (
-                                        isNaN(width)
-                                    ) {
-
-                                        width = 0;
-
-                                    }
-
-                                    width =
-                                        Math.min(
-                                            100,
-                                            Math.max(
-                                                0,
-                                                width
-                                            )
-                                        );
-
-                                    progressBar
-                                        .style
-                                        .width =
-                                        width + "%";
-
-                                }
-
-                                observer.unobserve(
-                                    entry.target
-                                );
-
-                            }
-
-                        }
-                    );
-
-                },
-                {
-                    threshold: 0.35
-                }
-            );
-
-
-        skillCards.forEach(
-            function (card) {
-
-                skillObserver.observe(
-                    card
-                );
-
-            }
-        );
-
-    } else {
-
-        skillCards.forEach(function (card) {
-
-            const progressBar =
-                card.querySelector(
-                    ".skill-progress"
-                );
-
-            if (progressBar) {
-
-                let width =
-                    parseInt(
-                        progressBar.dataset.width,
-                        10
-                    );
-
-                if (isNaN(width)) {
-                    width = 0;
-                }
-
-                width =
-                    Math.min(
-                        100,
-                        Math.max(
-                            0,
-                            width
-                        )
-                    );
-
-                progressBar.style.width =
-                    width + "%";
-            }
-
-        });
-
-    }
-
-
-    // =====================================================
-    // THEME TOGGLE
-    // =====================================================
-
-    const savedTheme =
-        localStorage.getItem(
-            "portfolio-theme"
-        );
-
-
-    if (savedTheme === "light") {
-
-        document.documentElement
-            .setAttribute(
-                "data-theme",
-                "light"
-            );
-
-        if (themeIcon) {
-
-            themeIcon.className =
-                "bi bi-sun-fill";
-
-        }
-
-    } else {
-
-        document.documentElement
-            .removeAttribute(
-                "data-theme"
-            );
-
-        if (themeIcon) {
-
-            themeIcon.className =
-                "bi bi-moon-stars-fill";
-
-        }
-
-    }
-
-
-    if (themeToggle) {
-
-        themeToggle.addEventListener(
-            "click",
-            function () {
-
-                const currentTheme =
-                    document.documentElement
-                        .getAttribute(
-                            "data-theme"
-                        );
-
-
-                if (
-                    currentTheme === "light"
-                ) {
-
-                    document.documentElement
-                        .removeAttribute(
-                            "data-theme"
-                        );
-
-                    localStorage.setItem(
-                        "portfolio-theme",
-                        "dark"
-                    );
-
-                    if (themeIcon) {
-
-                        themeIcon.className =
-                            "bi bi-moon-stars-fill";
-
-                    }
-
-                } else {
-
-                    document.documentElement
-                        .setAttribute(
-                            "data-theme",
-                            "light"
-                        );
-
-                    localStorage.setItem(
-                        "portfolio-theme",
-                        "light"
-                    );
-
-                    if (themeIcon) {
-
-                        themeIcon.className =
-                            "bi bi-sun-fill";
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
-
-
-    // =====================================================
-    // BACK TO TOP
-    // =====================================================
-
-    function updateBackToTop() {
-
-        if (!backToTop) {
-            return;
-        }
-
-        if (window.scrollY > 500) {
-
-            backToTop.classList.add(
-                "show"
-            );
-
-        } else {
-
-            backToTop.classList.remove(
-                "show"
-            );
-
-        }
-
-    }
-
-
-    window.addEventListener(
-        "scroll",
-        updateBackToTop
-    );
-
-    updateBackToTop();
-
-
-    if (backToTop) {
-
-        window.addEventListener("scroll", () => {
-            if (window.scrollY > 500) {
-                backToTop.classList.add("show");
-            } else {
-                backToTop.classList.remove("show");
+    if (cliInput) {
+        cliInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                const val = this.value;
+                runCliCommand(val);
+                this.value = "";
             }
         });
-
-        backToTop.addEventListener(
-            "click",
-            function () {
-
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
-
-            }
-        );
-
     }
-
 });

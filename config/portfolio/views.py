@@ -1,8 +1,7 @@
 from django.contrib import messages
-from django.shortcuts import render, redirect
 from django.db import transaction
-from .services import send_telegram_notification
-from django.http import HttpResponse
+from django.http import FileResponse, Http404, HttpResponse
+from django.shortcuts import render, redirect
 
 from .forms import ContactForm
 
@@ -15,101 +14,248 @@ from .models import (
     Education,
     Resume,
     ContactMessage,
+    ResumeDownload,
+    TrainingCourse,
+)
+
+from .services import (
+    send_contact_notification,
+    send_resume_download_notification,
 )
 
 
-def robots_txt(request):
-    lines = [
-        "User-agent: *",
-        "Allow: /",
-        f"Sitemap: {request.scheme}://{request.get_host()}/sitemap.xml",
-    ]
-
-    return HttpResponse(
-        "\n".join(lines),
-        content_type="text/plain"
-    )
-    
-    
-
 def home(request):
 
-    profile = Profile.objects.filter(
-        is_active=True
-    ).first()
+    # =========================================================
+    # LOAD PORTFOLIO DATA
+    # =========================================================
 
-    social_links = SocialLink.objects.filter(
-        is_active=True
+    profile = (
+        Profile.objects
+        .filter(is_active=True)
+        .first()
     )
 
-    experiences = Experience.objects.filter(
-        is_active=True
+    social_links = (
+        SocialLink.objects
+        .filter(is_active=True)
+        .order_by("display_order", "id")
     )
 
-    projects = Project.objects.filter(
-        is_active=True
+    experiences = (
+        Experience.objects
+        .filter(is_active=True)
+        .order_by("display_order", "-start_date")
     )
 
-    skills = Skill.objects.filter(
-        is_active=True
+    projects = (
+        Project.objects
+        .filter(is_active=True)
+        .order_by("display_order", "-created_at")
     )
 
-    education = Education.objects.filter(
-        is_active=True
+    skills = (
+        Skill.objects
+        .filter(is_active=True)
+        .order_by(
+            "display_order",
+            "title",
+        )
+    )
+    education = (
+        Education.objects
+        .filter(is_active=True)
+        .order_by(
+            "display_order",
+            "-start_date",
+        )
+    )
+    
+    training_courses = (
+        TrainingCourse.objects
+        .filter(is_active=True)
+        .order_by(
+            "display_order",
+            "title",
+        )
     )
 
-    resume = Resume.objects.filter(
-        is_active=True
-    ).first()
+    resume = (
+        Resume.objects
+        .filter(is_active=True)
+        .first()
+    )
 
 
-    # =====================================================
+    # =========================================================
     # CONTACT FORM
-    # =====================================================
+    # =========================================================
 
     if request.method == "POST":
 
-        contact_form = ContactForm(
-            request.POST
-        )
+        contact_form = ContactForm(request.POST)
 
         if contact_form.is_valid():
 
+            # -------------------------------------------------
+            # CHECK RESUME CHOICE
+            # -------------------------------------------------
+
+            resume_requested = (
+                contact_form.cleaned_data.get(
+                    "resume_choice"
+                ) == "yes"
+            )
+
+
+            # A resume is considered downloadable only when an
+            # active resume actually exists.
+            resume_will_download = (
+                resume_requested
+                and resume is not None
+                and bool(resume.resume_file)
+            )
+
+
+            # -------------------------------------------------
+            # SAVE MESSAGE TO ORACLE FIRST
+            # -------------------------------------------------
+
             with transaction.atomic():
 
-                contact_message = ContactMessage.objects.create(
-                    sender_name=contact_form.cleaned_data["name"],
-                    sender_email=contact_form.cleaned_data["email"],
-                    subject=contact_form.cleaned_data["subject"],
-                    message=contact_form.cleaned_data["message"],
+                contact_message = (
+                    ContactMessage.objects.create(
+                        sender_name=(
+                            contact_form.cleaned_data[
+                                "name"
+                            ]
+                        ),
+                        sender_email=(
+                            contact_form.cleaned_data[
+                                "email"
+                            ]
+                        ),
+                        subject=(
+                            contact_form.cleaned_data.get(
+                                "subject",
+                                "",
+                            )
+                        ),
+                        message=(
+                            contact_form.cleaned_data[
+                                "message"
+                            ]
+                        ),
+                    )
                 )
 
-            # Database transaction is already committed here.
-            # Telegram failure must not remove the saved message.
 
-            telegram_success = send_telegram_notification(
-                contact_message
+                # ---------------------------------------------
+                # LOG RESUME DOWNLOAD
+                # ---------------------------------------------
+
+                resume_download = None
+
+                if resume_will_download:
+
+                    resume_download = (
+                        ResumeDownload.objects.create(
+                            resume=resume,
+                            contact_message=contact_message,
+                        )
+                    )
+
+
+            # -------------------------------------------------
+            # SEND ONE CONTACT EMAIL
+            # -------------------------------------------------
+            #
+            # YES:
+            # Message + Resume Downloaded: YES
+            #
+            # NO:
+            # Message + Resume Downloaded: NO
+            #
+            # -------------------------------------------------
+
+            email_success = (
+                send_contact_notification(
+                    contact_message,
+                    resume_downloaded=resume_will_download,
+                )
             )
 
-            if telegram_success:
 
-                contact_message.telegram_sent = True
+            if email_success:
+
+                contact_message.email_sent = True
 
                 contact_message.save(
-                    update_fields=["telegram_sent"]
+                    update_fields=["email_sent"]
                 )
 
-            messages.success(
-                request,
-                "Your message has been sent successfully."
-            )
 
-            return redirect("/#contact")   
+                if resume_download:
+
+                    resume_download.notification_sent = True
+
+                    resume_download.save(
+                        update_fields=[
+                            "notification_sent"
+                        ]
+                    )
+
+
+            # -------------------------------------------------
+            # YES → DOWNLOAD RESUME IMMEDIATELY
+            # -------------------------------------------------
+
+            if resume_will_download:
+
+                return FileResponse(
+                    resume.resume_file.open("rb"),
+                    as_attachment=True,
+                    filename=(
+                        resume.resume_file.name
+                        .split("/")[-1]
+                        .split("\\")[-1]
+                    ),
+                )
+
+
+            # -------------------------------------------------
+            # USER SELECTED YES BUT NO ACTIVE RESUME EXISTS
+            # -------------------------------------------------
+
+            if resume_requested and not resume_will_download:
+
+                messages.warning(
+                    request,
+                    (
+                        "Your message was sent successfully, "
+                        "but the resume is currently unavailable."
+                    ),
+                )
+
+            else:
+
+                messages.success(
+                    request,
+                    "Your message has been sent successfully.",
+                )
+
+
+            return redirect("/#contact")
+
 
     else:
 
         contact_form = ContactForm()
 
+
+    # =========================================================
+    # TEMPLATE CONTEXT
+    # =========================================================
 
     context = {
         "profile": profile,
@@ -118,6 +264,7 @@ def home(request):
         "projects": projects,
         "skills": skills,
         "education": education,
+        "training_courses": training_courses,
         "resume": resume,
         "contact_form": contact_form,
     }
@@ -126,11 +273,116 @@ def home(request):
     return render(
         request,
         "portfolio/home.html",
-        context
+        context,
     )
-    
-    
+
+
+# =============================================================
+# DIRECT RESUME DOWNLOAD
+# =============================================================
+#
+# Used by the hero Download Resume button.
+#
+# This is different from contact-form YES.
+#
+# Contact form YES:
+#     one contact email with Resume Downloaded = YES
+#
+# Hero download:
+#     separate anonymous resume-download email
+#
+# =============================================================
+
+def download_resume(request, resume_id):
+
+    try:
+
+        resume = Resume.objects.get(
+            id=resume_id,
+            is_active=True,
+        )
+
+    except Resume.DoesNotExist:
+
+        raise Http404(
+            "Resume not found."
+        )
+
+
+    if not resume.resume_file:
+
+        raise Http404(
+            "Resume file not found."
+        )
+
+
+    # Direct hero download has no required contact message.
+    resume_download = (
+        ResumeDownload.objects.create(
+            resume=resume,
+            contact_message=None,
+        )
+    )
+
+
+    email_success = (
+        send_resume_download_notification(
+            resume_download
+        )
+    )
+
+
+    if email_success:
+
+        resume_download.notification_sent = True
+
+        resume_download.save(
+            update_fields=[
+                "notification_sent"
+            ]
+        )
+
+
+    return FileResponse(
+        resume.resume_file.open("rb"),
+        as_attachment=True,
+        filename=(
+            resume.resume_file.name
+            .split("/")[-1]
+            .split("\\")[-1]
+        ),
+    )
+
+
+# =============================================================
+# ROBOTS.TXT
+# =============================================================
+
+def robots_txt(request):
+
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        (
+            f"Sitemap: "
+            f"{request.scheme}://"
+            f"{request.get_host()}/"
+            f"sitemap.xml"
+        ),
+    ]
+
+    return HttpResponse(
+        "\n".join(lines),
+        content_type="text/plain",
+    )
+
+
+# =============================================================
+# CUSTOM ERROR PAGES
+# =============================================================
+
 def error_400(request, exception):
+
     return render(
         request,
         "400.html",
@@ -139,6 +391,7 @@ def error_400(request, exception):
 
 
 def error_403(request, exception):
+
     return render(
         request,
         "403.html",
@@ -147,6 +400,7 @@ def error_403(request, exception):
 
 
 def error_404(request, exception):
+
     return render(
         request,
         "404.html",
@@ -155,6 +409,7 @@ def error_404(request, exception):
 
 
 def error_500(request):
+
     return render(
         request,
         "500.html",

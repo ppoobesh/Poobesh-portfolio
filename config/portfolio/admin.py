@@ -8,6 +8,7 @@ from .models import (
     Project,
     Skill,
     Education,
+    TrainingCourse,
     Resume,
     ContactMessage,
 )
@@ -303,36 +304,36 @@ class ProjectAdmin(admin.ModelAdmin):
 class SkillAdmin(admin.ModelAdmin):
 
     list_display = (
-        "name",
-        "category",
-        "proficiency",
+        "title",
+        "skills_preview",
         "display_order",
         "is_active",
     )
 
-    list_filter = (
-        "category",
-        "is_active",
-    )
-
     search_fields = (
-        "name",
-        "category",
+        "title",
+        "skills",
     )
 
     list_editable = (
-        "proficiency",
         "display_order",
         "is_active",
     )
 
     ordering = (
-        "category",
         "display_order",
-        "name",
+        "title",
     )
 
+    @admin.display(
+        description="Skills"
+    )
+    def skills_preview(self, obj):
 
+        if len(obj.skills) > 80:
+            return obj.skills[:80] + "..."
+
+        return obj.skills
 
 # =========================================================
 # EDUCATION
@@ -372,9 +373,7 @@ class EducationAdmin(admin.ModelAdmin):
         "display_order",
         "-start_date",
     )
-
-
-
+    
 # =========================================================
 # RESUME
 # =========================================================
@@ -437,12 +436,12 @@ class ContactMessageAdmin(admin.ModelAdmin):
         "subject",
         "created_at",
         "is_read",
-        "telegram_sent",
+        "email_sent",
     )
 
     list_filter = (
         "is_read",
-        "telegram_sent",
+        "email_sent",
         "created_at",
     )
 
@@ -459,11 +458,45 @@ class ContactMessageAdmin(admin.ModelAdmin):
         "subject",
         "message",
         "created_at",
-        "telegram_sent",
+        "email_sent",
     )
 
     ordering = (
         "-created_at",
+    )
+    
+
+#courses
+@admin.register(TrainingCourse)
+class TrainingCourseAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "title",
+        "provider",
+        "status",
+        "display_order",
+        "is_active",
+    )
+
+    search_fields = (
+        "title",
+        "provider",
+        "topics",
+    )
+
+    list_filter = (
+        "status",
+        "is_active",
+    )
+
+    list_editable = (
+        "display_order",
+        "is_active",
+    )
+
+    ordering = (
+        "display_order",
+        "title",
     )
     
 

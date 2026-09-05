@@ -1,470 +1,161 @@
-<section id="contact">
-
+<section id="contact" class="bento-section">
     <div class="container">
 
-        <!-- SECTION HEADER -->
-        <div class="text-center reveal">
-
-            <div class="section-label">
-                Contact
-            </div>
-
-            <h2 class="section-title">
-                Let's Connect
-            </h2>
-
-            <p class="section-description">
-                Have a project, opportunity or collaboration in mind?
-                Send me a message.
-            </p>
-
+        <div class="section-meta-header">
+            <span class="section-badge font-monospace">./dispatch_message</span>
+            <h2 class="section-h2">Initiate Contact</h2>
+            <p class="section-sub">Drop a direct inquiry, discuss open roles, or schedule a technical chat.</p>
         </div>
 
-
         <div class="row g-4 align-items-stretch">
-
-            <!-- =====================================================
-                 CONTACT INFORMATION
-            ====================================================== -->
-
-            <div class="col-lg-5 reveal">
-
-                <div class="glass-card contact-info-card h-100">
-
-                    <div class="icon-box mb-4">
-                        <i class="bi bi-chat-dots-fill"></i>
-                    </div>
-
-
-                    <h3>
-                        Contact Information
-                    </h3>
-
-
-                    <p class="text-secondary mb-4">
-                        Feel free to reach out using the form
-                        or through the contact details below.
-                    </p>
-
-
-                    {% if profile %}
-
-                        <!-- EMAIL -->
-
-                        {% if profile.email %}
-
-                            <a
-                                href="mailto:{{ profile.email }}"
-                                class="contact-info-item"
-                            >
-
-                                <div class="contact-info-icon">
-                                    <i class="bi bi-envelope-fill"></i>
-                                </div>
-
-
-                                <div>
-
-                                    <small>
-                                        Email
-                                    </small>
-
-                                    <span>
-                                        {{ profile.email }}
-                                    </span>
-
-                                </div>
-
-                            </a>
-
-                        {% endif %}
-
-
-                        <!-- PHONE -->
-
-                        {% if profile.phone %}
-
-                            <a
-                                href="tel:{{ profile.phone }}"
-                                class="contact-info-item"
-                            >
-
-                                <div class="contact-info-icon">
-                                    <i class="bi bi-telephone-fill"></i>
-                                </div>
-
-
-                                <div>
-
-                                    <small>
-                                        Phone
-                                    </small>
-
-                                    <span>
-                                        {{ profile.phone }}
-                                    </span>
-
-                                </div>
-
-                            </a>
-
-                        {% endif %}
-
-
-                        <!-- LOCATION -->
-
-                        {% if profile.location %}
-
-                            <div class="contact-info-item">
-
-                                <div class="contact-info-icon">
-                                    <i class="bi bi-geo-alt-fill"></i>
-                                </div>
-
-
-                                <div>
-
-                                    <small>
-                                        Location
-                                    </small>
-
-                                    <span>
-                                        {{ profile.location }}
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        {% endif %}
-
-                    {% endif %}
-
-
-                    <!-- SOCIAL LINKS -->
-
-                    {% if social_links %}
-
-                        <div class="contact-social-links mt-4">
-
-                            {% for social in social_links %}
-
-                                <a
-                                    href="{{ social.url }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label="{{ social.get_platform_display }}"
-                                >
-
-                                    {% if social.icon %}
-
-                                        <i class="{{ social.icon }}"></i>
-
-                                    {% elif social.platform == "github" %}
-
-                                        <i class="bi bi-github"></i>
-
-                                    {% elif social.platform == "linkedin" %}
-
-                                        <i class="bi bi-linkedin"></i>
-
-                                    {% elif social.platform == "instagram" %}
-
-                                        <i class="bi bi-instagram"></i>
-
-                                    {% elif social.platform == "youtube" %}
-
-                                        <i class="bi bi-youtube"></i>
-
-                                    {% elif social.platform == "twitter" %}
-
-                                        <i class="bi bi-twitter-x"></i>
-
-                                    {% else %}
-
-                                        <i class="bi bi-link-45deg"></i>
-
-                                    {% endif %}
-
+            
+            <div class="col-lg-5">
+                <div class="bento-card h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="clean-pill-label mb-3 d-inline-block"><i class="bi bi-broadcast me-1"></i> Channels</span>
+                        <h3 class="mb-2">Available Channels</h3>
+                        <p class="contact-sub-highlight mb-4">Direct points of communication:</p>
+
+                        <div class="bento-info-stack">
+                            {% if profile and profile.email %}
+                                <a href="mailto:{{ profile.email }}" class="bento-info-tile">
+                                    <div class="tile-icon"><i class="bi bi-envelope-fill"></i></div>
+                                    <div class="tile-meta">
+                                        <small>Email</small>
+                                        <span class="text-truncate">{{ profile.email }}</span>
+                                    </div>
+                                    <i class="bi bi-arrow-up-right tile-arrow"></i>
                                 </a>
-
-                            {% endfor %}
-
-                        </div>
-
-                    {% endif %}
-
-                </div>
-
-            </div>
-
-
-            <!-- =====================================================
-                 CONTACT FORM
-            ====================================================== -->
-
-            <div class="col-lg-7 reveal">
-
-                <div class="glass-card contact-form-card h-100">
-
-
-                    <!-- DJANGO SUCCESS / ERROR MESSAGES -->
-
-                    {% if messages %}
-
-                        {% for message in messages %}
-
-                            <div
-                                class="contact-alert {% if message.tags %}{{ message.tags }}{% endif %}"
-                                role="alert"
-                            >
-
-                                {% if message.tags == "success" %}
-
-                                    <i class="bi bi-check-circle-fill"></i>
-
-                                {% elif message.tags == "error" %}
-
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-
-                                {% else %}
-
-                                    <i class="bi bi-info-circle-fill"></i>
-
-                                {% endif %}
-
-
-                                <span>
-                                    {{ message }}
-                                </span>
-
-                            </div>
-
-                        {% endfor %}
-
-                    {% endif %}
-
-
-                    <!-- FORM -->
-
-                    <form
-                        method="POST"
-                        action="#contact"
-                        novalidate
-                    >
-
-                        {% csrf_token %}
-
-
-                        <div class="row g-3">
-
-
-                            <!-- ================================
-                                 NAME
-                            ================================= -->
-
-                            <div class="col-md-6">
-
-                                <label
-                                    for="{{ contact_form.name.id_for_label }}"
-                                    class="form-label"
-                                >
-                                    Name
-                                    <span class="required-mark">*</span>
-                                </label>
-
-
-                                {{ contact_form.name }}
-
-
-                                {% if contact_form.name.errors %}
-
-                                    <div class="form-error">
-
-                                        {% for error in contact_form.name.errors %}
-
-                                            <div>
-                                                <i class="bi bi-exclamation-circle me-1"></i>
-                                                {{ error }}
-                                            </div>
-
-                                        {% endfor %}
-
-                                    </div>
-
-                                {% endif %}
-
-                            </div>
-
-
-                            <!-- ================================
-                                 EMAIL
-                            ================================= -->
-
-                            <div class="col-md-6">
-
-                                <label
-                                    for="{{ contact_form.email.id_for_label }}"
-                                    class="form-label"
-                                >
-                                    Email
-                                    <span class="required-mark">*</span>
-                                </label>
-
-
-                                {{ contact_form.email }}
-
-
-                                {% if contact_form.email.errors %}
-
-                                    <div class="form-error">
-
-                                        {% for error in contact_form.email.errors %}
-
-                                            <div>
-                                                <i class="bi bi-exclamation-circle me-1"></i>
-                                                {{ error }}
-                                            </div>
-
-                                        {% endfor %}
-
-                                    </div>
-
-                                {% endif %}
-
-                            </div>
-
-
-                            <!-- ================================
-                                 SUBJECT
-                            ================================= -->
-
-                            <div class="col-12">
-
-                                <label
-                                    for="{{ contact_form.subject.id_for_label }}"
-                                    class="form-label"
-                                >
-                                    Subject
-                                </label>
-
-
-                                {{ contact_form.subject }}
-
-
-                                {% if contact_form.subject.errors %}
-
-                                    <div class="form-error">
-
-                                        {% for error in contact_form.subject.errors %}
-
-                                            <div>
-                                                <i class="bi bi-exclamation-circle me-1"></i>
-                                                {{ error }}
-                                            </div>
-
-                                        {% endfor %}
-
-                                    </div>
-
-                                {% endif %}
-
-                            </div>
-
-
-                            <!-- ================================
-                                 MESSAGE
-                            ================================= -->
-
-                            <div class="col-12">
-
-                                <label
-                                    for="{{ contact_form.message.id_for_label }}"
-                                    class="form-label"
-                                >
-                                    Message
-                                    <span class="required-mark">*</span>
-                                </label>
-
-
-                                {{ contact_form.message }}
-
-
-                                {% if contact_form.message.errors %}
-
-                                    <div class="form-error">
-
-                                        {% for error in contact_form.message.errors %}
-
-                                            <div>
-                                                <i class="bi bi-exclamation-circle me-1"></i>
-                                                {{ error }}
-                                            </div>
-
-                                        {% endfor %}
-
-                                    </div>
-
-                                {% endif %}
-
-                            </div>
-
-
-                            <!-- ================================
-                                 NON-FIELD ERRORS
-                            ================================= -->
-
-                            {% if contact_form.non_field_errors %}
-
-                                <div class="col-12">
-
-                                    <div class="form-error">
-
-                                        {% for error in contact_form.non_field_errors %}
-
-                                            <div>
-                                                <i class="bi bi-exclamation-triangle me-1"></i>
-                                                {{ error }}
-                                            </div>
-
-                                        {% endfor %}
-
-                                    </div>
-
-                                </div>
-
                             {% endif %}
 
+                            {% if profile and profile.phone %}
+                                <a href="tel:{{ profile.phone }}" class="bento-info-tile">
+                                    <div class="tile-icon"><i class="bi bi-telephone-fill"></i></div>
+                                    <div class="tile-meta">
+                                        <small>Phone</small>
+                                        <span>{{ profile.phone }}</span>
+                                    </div>
+                                    <i class="bi bi-arrow-up-right tile-arrow"></i>
+                                </a>
+                            {% endif %}
 
-                            <!-- ================================
-                                 SUBMIT BUTTON
-                            ================================= -->
+                            {% if profile and profile.location %}
+                                <div class="bento-info-tile">
+                                    <div class="tile-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                                    <div class="tile-meta">
+                                        <small>Location</small>
+                                        <span class="location-text-fix">{{ profile.location }}</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
 
-                            <div class="col-12">
+                    {% if social_links %}
+                        <div class="pt-4 mt-4 border-top border-secondary-subtle">
+                            <span class="bento-micro-label">Social Coordinates</span>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for social in social_links %}
+                                    <a href="{{ social.url }}" target="_blank" rel="noopener noreferrer" class="social-chip">
+                                        {% if social.icon %}<i class="{{ social.icon }}"></i>
+                                        {% elif social.platform == "github" %}<i class="bi bi-github"></i>
+                                        {% elif social.platform == "linkedin" %}<i class="bi bi-linkedin"></i>
+                                        {% elif social.platform == "twitter" %}<i class="bi bi-twitter-x"></i>
+                                        {% else %}<i class="bi bi-globe"></i>{% endif %}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
 
-                                <button
-                                    type="submit"
-                                    class="btn-gradient contact-submit-btn"
-                                >
+            <div class="col-lg-7">
+                <div class="bento-card h-100">
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="bento-alert alert-{{ message.tags|default:'info' }} mb-4" role="alert">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
 
-                                    <i class="bi bi-send-fill me-2"></i>
+                    <form method="POST" action="#contact" novalidate autocomplete="on">
+                        {% csrf_token %}
 
-                                    Send Message
+                        {% if contact_form.website %}
+                            <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+                                {{ contact_form.website }}
+                            </div>
+                        {% endif %}
 
-                                </button>
-
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="{{ contact_form.name.id_for_label }}" class="bento-input-label">Name *</label>
+                                {{ contact_form.name }}
+                                {% if contact_form.name.errors %}
+                                    <span class="bento-field-error">{{ contact_form.name.errors.0 }}</span>
+                                {% endif %}
                             </div>
 
-                        </div>
+                            <div class="col-md-6">
+                                <label for="{{ contact_form.email.id_for_label }}" class="bento-input-label">Email *</label>
+                                {{ contact_form.email }}
+                                {% if contact_form.email.errors %}
+                                    <span class="bento-field-error">{{ contact_form.email.errors.0 }}</span>
+                                {% endif %}
+                            </div>
 
+                            <div class="col-12">
+                                <label for="{{ contact_form.subject.id_for_label }}" class="bento-input-label">Subject</label>
+                                {{ contact_form.subject }}
+                                {% if contact_form.subject.errors %}
+                                    <span class="bento-field-error">{{ contact_form.subject.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12">
+                                <label for="{{ contact_form.message.id_for_label }}" class="bento-input-label">Message *</label>
+                                {{ contact_form.message }}
+                                {% if contact_form.message.errors %}
+                                    <span class="bento-field-error">{{ contact_form.message.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+
+                            {% if resume %}
+                                <div class="col-12">
+                                    <div class="bento-resume-check-card">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <i class="bi bi-file-earmark-arrow-down-fill text-accent"></i>
+                                            <span class="fw-bold small">Attach resume to response?</span>
+                                        </div>
+                                        <div class="d-flex gap-3 flex-wrap">
+                                            {% for radio in contact_form.resume_choice %}
+                                                <label class="bento-radio-option">
+                                                    {{ radio.tag }}
+                                                    <span>{{ radio.choice_label }}</span>
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="col-12 pt-2">
+                                <button type="submit" class="btn-primary-action w-100 justify-content-center">
+                                    <span>Send Transmission</span>
+                                    <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
                     </form>
 
                 </div>
-
             </div>
 
         </div>
 
     </div>
-
 </section>

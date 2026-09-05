@@ -105,28 +105,90 @@ class Project(models.Model):
         ordering = ['display_order', '-created_at']
         
 class Skill(models.Model):
-    CATEGORY_CHOICES = [
-        ("programming", "Programming"),
-        ("web", "Web Development"),
-        ("database", "Database"),
-        ("ai_ml", "AI / Machine Learning"),
-        ("embedded", "Embedded Systems"),
-        ("tools", "Tools"),
-        ("other", "Other"),
-    ]
-    name = models.CharField(max_length=100)
-    category = models.CharField(max_length=50,choices=CATEGORY_CHOICES)
-    proficiency = models.PositiveIntegerField(default=80,validators=[MinValueValidator(0),MaxValueValidator(100)],
-                                              help_text="Enter value between 0 and 100")
-    icon = models.CharField(max_length=100,blank=True)
-    display_order = models.PositiveIntegerField(default=0)
-    is_active = models.BooleanField(default=True)
-    
-    def __str__(self):
-        return self.name
+
+    title = models.CharField(
+        max_length=150
+    )
+
+    skills = models.TextField(
+        help_text=(
+            "Enter skills separated by commas. "
+            "Example: Python, SQL, JavaScript"
+        )
+    )
+
+    display_order = models.PositiveIntegerField(
+        default=0
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
     class Meta:
-        ordering = ['category', 'display_order', 'name']
-        
+        ordering = [
+            "display_order",
+            "title",
+        ]
+
+    def __str__(self):
+        return self.title
+
+    def skill_list(self):
+        return [
+            skill.strip()
+            for skill in self.skills.split(",")
+            if skill.strip()
+        ]
+
+class TrainingCourse(models.Model):
+
+    title = models.CharField(
+        max_length=200
+    )
+
+    provider = models.CharField(
+        max_length=200,
+        blank=True
+    )
+
+    status = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Example: In Progress, Completed"
+    )
+
+    topics = models.TextField(
+        help_text=(
+            "Enter topics separated by commas. "
+            "Example: Python, Django, REST API, HTML, CSS"
+        )
+    )
+
+    display_order = models.PositiveIntegerField(
+        default=0
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    class Meta:
+        ordering = [
+            "display_order",
+            "title",
+        ]
+
+    def __str__(self):
+        return self.title
+
+    def topic_list(self):
+        return [
+            topic.strip()
+            for topic in self.topics.split(",")
+            if topic.strip()
+        ]
+
 class Education(models.Model):
     institution = models.CharField(max_length=250)
     degree = models.CharField(max_length=250)
@@ -163,10 +225,44 @@ class ContactMessage(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
-    telegram_sent = models.BooleanField(default=False)
+    email_sent = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.sender_name} - {self.subject or 'No Subject'}"
 
     class Meta:
         ordering = ["-created_at"]
+        
+
+class ResumeDownload(models.Model):
+
+    resume = models.ForeignKey(
+        Resume,
+        on_delete=models.CASCADE,
+        related_name="downloads",
+    )
+
+    contact_message = models.ForeignKey(
+        ContactMessage,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="resume_downloads",
+    )
+
+    downloaded_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    notification_sent = models.BooleanField(
+        default=False
+    )
+
+    def __str__(self):
+        return (
+            f"{self.resume.title} - "
+            f"{self.downloaded_at}"
+        )
+
+    class Meta:
+        ordering = ["-downloaded_at"]

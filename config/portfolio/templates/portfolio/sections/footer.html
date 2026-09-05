@@ -1,89 +1,15 @@
-<footer>
-
+<footer class="bento-footer">
     <div class="container">
-
-
-        <div
-            class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
-        >
-
-
-            <div>
-
-                {% if profile %}
-
-                    © {% now "Y" %}
-                    {{ profile.full_name }}.
-
-                {% else %}
-
-                    © {% now "Y" %} Portfolio.
-
-                {% endif %}
-
-                All rights reserved.
-
+        <div class="bento-card py-3 px-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div class="footer-meta-info font-monospace small">
+                <span class="footer-copy">© {% now "Y" %} {% if profile %}{{ profile.full_name }}{% else %}Engineer{% endif %}.</span>
+                <span class="footer-divider">/</span>
+                <span class="footer-tech">Django Full-Stack</span>
             </div>
 
-
-            <div class="d-flex gap-2">
-
-
-                {% for social in social_links %}
-
-
-                    <a
-                        href="{{ social.url }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="theme-btn"
-                        aria-label="{{ social.get_platform_display }}"
-                    >
-
-
-                        {% if social.platform == "github" %}
-
-                            <i class="bi bi-github"></i>
-
-                        {% elif social.platform == "linkedin" %}
-
-                            <i class="bi bi-linkedin"></i>
-
-                        {% elif social.platform == "instagram" %}
-
-                            <i class="bi bi-instagram"></i>
-
-                        {% elif social.platform == "youtube" %}
-
-                            <i class="bi bi-youtube"></i>
-
-                        {% elif social.platform == "twitter" %}
-
-                            <i class="bi bi-twitter-x"></i>
-
-                        {% elif social.platform == "website" %}
-
-                            <i class="bi bi-globe"></i>
-
-                        {% else %}
-
-                            <i class="bi bi-link-45deg"></i>
-
-                        {% endif %}
-
-
-                    </a>
-
-
-                {% endfor %}
-
-
+            <div class="d-flex align-items-center gap-2">
+                <a href="#home" class="dock-link small"><i class="bi bi-arrow-up"></i> Top</a>
             </div>
-
-
         </div>
-
-
     </div>
-
 </footer>

@@ -1,295 +1,109 @@
-<section id="home" aria-labelledby="hero-heading">
-
+<section id="home" class="bento-hero">
     <div class="container">
-
-        <div class="row align-items-center g-5">
-
-            <!-- =====================================================
-                 HERO CONTENT
-            ====================================================== -->
-
-            <div class="col-lg-7 reveal">
-
-                <div class="hero-badge">
-
-                    <span
-                        class="status-dot"
-                        aria-hidden="true"
-                    ></span>
-
-                    Available for opportunities
-
+        <div class="bento-hero-grid">
+            
+            <div class="bento-card hero-main-card">
+                <div class="hero-status-pill mb-3">
+                    <span class="pulse-dot"></span>
+                    <span>Ready for Engineering Challenges</span>
                 </div>
 
-
-                {% if profile %}
-
-                    <p class="text-secondary mb-2">
-                        Hello, I'm
-                    </p>
-
-
-                    <h1
-                        id="hero-heading"
-                        class="hero-title"
-                    >
-                        {{ profile.full_name }}
-                    </h1>
-
-
-                    <p class="hero-role">
-
-                        <span class="gradient-text">
-                            {{ profile.professional_title }}
-                        </span>
-
-                    </p>
-
-
-                    {% if profile.short_intro %}
-
-                        <p class="hero-intro">
-                            {{ profile.short_intro }}
-                        </p>
-
+                <h1 class="hero-headline">
+                    {% if profile %}
+                        Hey, I'm <span class="highlight-text">{{ profile.full_name }}</span>.
+                    {% else %}
+                        Building Scalable <span class="highlight-text">Software Systems</span>.
                     {% endif %}
+                </h1>
 
+                <div class="hero-console-role">
+                    <span class="console-tag">ROLE:</span>
+                    <p class="console-text font-monospace mb-0">
+                        {% if profile %}{{ profile.professional_title }}{% else %}Full-Stack Software Engineer{% endif %}
+                    </p>
+                </div>
 
-                {% else %}
-
-                    <h1
-                        id="hero-heading"
-                        class="hero-title"
-                    >
-
-                        Professional
-
-                        <span class="gradient-text">
-                            Portfolio
-                        </span>
-
-                    </h1>
-
+                {% if profile.short_intro %}
+                    <p class="hero-subtext">
+                        {{ profile.short_intro }}
+                    </p>
                 {% endif %}
 
-
-                <!-- =================================================
-                     PRIMARY ACTIONS
-                ================================================== -->
-
-                <div class="hero-actions">
-
-                    <a
-                        href="#projects"
-                        class="btn-gradient"
-                    >
-
-                        <i
-                            class="bi bi-grid"
-                            aria-hidden="true"
-                        ></i>
-
-                        <span class="ms-2">
-                            View Projects
-                        </span>
-
+                <div class="hero-btn-row">
+                    <a href="#projects" class="btn-primary-action">
+                        <span>Explore Projects</span>
+                        <i class="bi bi-arrow-right"></i>
                     </a>
-
-
-                    <a
-                        href="#contact"
-                        class="btn-outline-modern"
-                    >
-
-                        <i
-                            class="bi bi-send"
-                            aria-hidden="true"
-                        ></i>
-
-                        <span class="ms-2">
-                            Contact Me
-                        </span>
-
+                    <a href="#contact" class="btn-ghost-action">
+                        <span>Get in Touch</span>
                     </a>
-
-
                     {% if resume and resume.resume_file %}
-
-                        <a
-                            href="{{ resume.resume_file.url }}"
-                            class="btn-outline-modern"
-                            download
-                        >
-
-                            <i
-                                class="bi bi-file-earmark-arrow-down"
-                                aria-hidden="true"
-                            ></i>
-
-                            <span class="ms-2">
-                                Download Resume
-                            </span>
-
+                        <a href="{% url 'portfolio:download_resume' resume.id %}" class="btn-ghost-action resume-btn">
+                            <i class="bi bi-download me-1"></i>
+                            <span>Resume</span>
                         </a>
-
                     {% endif %}
-
                 </div>
+            </div>
 
+            <div class="bento-card hero-avatar-card">
+                <div class="avatar-frame">
+                    {% if profile and profile.profile_image %}
+                        <img src="{{ profile.profile_image.url }}" alt="{{ profile.full_name }}" class="bento-avatar-img">
+                    {% else %}
+                        <div class="avatar-fallback">
+                            <i class="bi bi-terminal-fill"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
 
-                <!-- =================================================
-                     SOCIAL LINKS
-                ================================================== -->
+            <!-- Interactive Poke-Around Terminal Console -->
+            <div class="bento-card hero-terminal-card">
+                <div class="terminal-console-window">
+                    <div class="console-header">
+                        <div class="console-dots">
+                            <span class="dot dot-red"></span>
+                            <span class="dot dot-yellow"></span>
+                            <span class="dot dot-green"></span>
+                        </div>
+                        <span class="console-user font-monospace">visitor@{% if profile %}{{ profile.full_name|slugify }}{% else %}portfolio{% endif %}</span>
+                    </div>
 
-                {% if social_links %}
+                    <div class="console-body font-monospace" id="terminalLog">
+                        <div class="log-line text-intro">
+                            Hi, I'm {% if profile %}{{ profile.full_name }}{% else %}Developer{% endif %}. Type "<span class="text-cmd-hint">help</span>" to look around.
+                        </div>
+                    </div>
 
-                    <div
-                        class="d-flex flex-wrap gap-2 mt-4"
-                        aria-label="Social links"
-                    >
+                    <div class="console-footer">
+                        <span class="console-prompt font-monospace">$</span>
+                        <input type="text" id="cliInput" class="console-input font-monospace" placeholder="type 'help' and press enter" autocomplete="off" spellcheck="false">
+                    </div>
+                </div>
+                <div class="console-caption font-monospace text-center mt-2">
+                    A small poke-around terminal — try <code>help</code>, <code>skills</code>, <code>education</code>, or <code>clear</code>.
+                </div>
+            </div>
 
+            {% if social_links %}
+                <div class="bento-card hero-social-card">
+                    <span class="bento-micro-label">Connect &amp; Socials</span>
+                    <div class="social-chip-grid">
                         {% for social in social_links %}
-
-                            <a
-                                href="{{ social.url }}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="btn-outline-modern"
-                                aria-label="{{ social.display_name|default:social.get_platform_display }}"
-                            >
-
-                                {% if social.icon %}
-
-                                    <i
-                                        class="{{ social.icon }}"
-                                        aria-hidden="true"
-                                    ></i>
-
-                                {% elif social.platform == "github" %}
-
-                                    <i
-                                        class="bi bi-github"
-                                        aria-hidden="true"
-                                    ></i>
-
-                                {% elif social.platform == "linkedin" %}
-
-                                    <i
-                                        class="bi bi-linkedin"
-                                        aria-hidden="true"
-                                    ></i>
-
-                                {% elif social.platform == "instagram" %}
-
-                                    <i
-                                        class="bi bi-instagram"
-                                        aria-hidden="true"
-                                    ></i>
-
-                                {% elif social.platform == "youtube" %}
-
-                                    <i
-                                        class="bi bi-youtube"
-                                        aria-hidden="true"
-                                    ></i>
-
-                                {% elif social.platform == "twitter" %}
-
-                                    <i
-                                        class="bi bi-twitter-x"
-                                        aria-hidden="true"
-                                    ></i>
-
-                                {% elif social.platform == "website" %}
-
-                                    <i
-                                        class="bi bi-globe"
-                                        aria-hidden="true"
-                                    ></i>
-
-                                {% else %}
-
-                                    <i
-                                        class="bi bi-link-45deg"
-                                        aria-hidden="true"
-                                    ></i>
-
-                                {% endif %}
-
-
-                                <span class="ms-2">
-
-                                    {% if social.display_name %}
-
-                                        {{ social.display_name }}
-
-                                    {% else %}
-
-                                        {{ social.get_platform_display }}
-
-                                    {% endif %}
-
-                                </span>
-
+                            <a href="{{ social.url }}" target="_blank" rel="noopener noreferrer" class="social-chip">
+                                {% if social.icon %}<i class="{{ social.icon }}"></i>
+                                {% elif social.platform == "github" %}<i class="bi bi-github"></i>
+                                {% elif social.platform == "linkedin" %}<i class="bi bi-linkedin"></i>
+                                {% elif social.platform == "twitter" %}<i class="bi bi-twitter-x"></i>
+                                {% else %}<i class="bi bi-link-45deg"></i>{% endif %}
+                                <span>{{ social.display_name|default:social.get_platform_display }}</span>
                             </a>
-
                         {% endfor %}
-
                     </div>
-
-                {% endif %}
-
-            </div>
-
-
-            <!-- =====================================================
-                 PROFILE IMAGE
-            ====================================================== -->
-
-            <div class="col-lg-5">
-
-                <div class="profile-wrapper reveal">
-
-                    <div
-                        class="profile-glow"
-                        aria-hidden="true"
-                    ></div>
-
-
-                    <div class="profile-image-container">
-
-                        {% if profile and profile.profile_image %}
-
-                            <img
-                                src="{{ profile.profile_image.url }}"
-                                alt="{{ profile.full_name }} profile photo"
-                                class="profile-image"
-                                width="800"
-                                height="800"
-                                fetchpriority="high"
-                            >
-
-                        {% else %}
-
-                            <div
-                                class="profile-placeholder"
-                                aria-hidden="true"
-                            >
-
-                                <i class="bi bi-person"></i>
-
-                            </div>
-
-                        {% endif %}
-
-                    </div>
-
                 </div>
-
-            </div>
+            {% endif %}
 
         </div>
-
     </div>
-
 </section>

@@ -1,0 +1,63 @@
+<section id="training" class="bento-section">
+    <div class="container">
+
+        <!-- SECTION HEADER -->
+        <div class="section-meta-header">
+            <span class="section-badge font-monospace">./continuous_learning</span>
+            <h2 class="section-h2">Training &amp; Certifications</h2>
+            <p class="section-sub">Specialized courses, technical intensives, and domains I am actively mastering.</p>
+        </div>
+
+        {% if training_courses %}
+            <div class="bento-card compact-training-board">
+                {% for course in training_courses %}
+                    <div class="compact-training-row">
+                        
+                        <!-- COURSE INFO & PROVIDER -->
+                        <div class="compact-training-lead">
+                            <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                <span class="compact-category-bullet">&gt;</span>
+                                <h3 class="compact-course-title font-monospace mb-0">
+                                    {{ course.title }}
+                                </h3>
+
+                                {% if course.status %}
+                                    <span class="status-pill-badge font-monospace">
+                                        <span class="status-pill-dot"></span>
+                                        {{ course.status }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            {% if course.provider %}
+                                <div class="compact-course-provider font-monospace text-muted">
+                                    <i class="bi bi-award-fill me-1"></i>{{ course.provider }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- TOPICS COVERED PILLS -->
+                        {% if course.topic_list %}
+                            <div class="compact-training-tags">
+                                {% for topic in course.topic_list %}
+                                    <span class="training-mini-pill font-monospace">
+                                        {{ topic }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                    </div>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div class="bento-card text-center py-5">
+                <i class="bi bi-journal-code display-5 mb-2 text-muted"></i>
+                <h4>No training records found</h4>
+                <p class="text-secondary mb-0">Courses and certifications added via Django Admin will render here.</p>
+            </div>
+        {% endif %}
+
+    </div>
+</section>

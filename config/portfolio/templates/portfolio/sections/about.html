@@ -1,149 +1,67 @@
-<section id="about">
-
+<section id="about" class="bento-section">
     <div class="container">
-
-
-        <div class="text-center reveal">
-
-            <div class="section-label">
-                About
-            </div>
-
-            <h2 class="section-title">
-                About Me
-            </h2>
-
+        
+        <div class="section-meta-header">
+            <span class="section-badge font-monospace">./about_me</span>
+            <h2 class="section-h2">Background &amp; Profile</h2>
+            <p class="section-sub">Who I am, what drives my engineering passion, and how to reach me directly.</p>
         </div>
-
 
         {% if profile %}
-
-
-        <div class="row g-4">
-
-
-            <div class="col-lg-8 reveal">
-
-
-                <div class="glass-card">
-
-
-                    <div class="icon-box mb-4">
-
-                        <i class="bi bi-person-workspace"></i>
-
+            <div class="bento-about-grid">
+                
+                <div class="bento-card about-summary-box">
+                    <div class="bento-card-header mb-3">
+                        <span class="clean-pill-label"><i class="bi bi-file-text-fill me-1"></i> Overview</span>
                     </div>
-
-
-                    <h3>
-                        Professional Summary
-                    </h3>
-
-
-                    <div class="about-text">
-
+                    <h3 class="about-title mb-3">Professional Summary</h3>
+                    <div class="about-prose">
                         {{ profile.professional_summary|linebreaks }}
-
                     </div>
-
-
                 </div>
 
+                <div class="bento-card about-info-box">
+                    <div class="bento-card-header mb-3">
+                        <span class="clean-pill-label"><i class="bi bi-person-lines-fill me-1"></i> Direct Contact</span>
+                    </div>
 
-            </div>
-
-
-            <div class="col-lg-4 reveal">
-
-
-                <div class="glass-card h-100">
-
-
-                    {% if profile.email %}
-
-                    <div class="info-item">
-
-                        <i class="bi bi-envelope"></i>
-
-                        <div>
-
-                            <small class="text-secondary">
-                                Email
-                            </small>
-
-                            <br>
-
-                            <a href="mailto:{{ profile.email }}">
-                                {{ profile.email }}
+                    <div class="bento-info-stack">
+                        {% if profile.email %}
+                            <a href="mailto:{{ profile.email }}" class="bento-info-tile">
+                                <div class="tile-icon"><i class="bi bi-envelope-at-fill"></i></div>
+                                <div class="tile-meta">
+                                    <small>Email</small>
+                                    <span>{{ profile.email }}</span>
+                                </div>
+                                <i class="bi bi-arrow-up-right tile-arrow"></i>
                             </a>
+                        {% endif %}
 
-                        </div>
-
-                    </div>
-
-                    {% endif %}
-
-
-                    {% if profile.phone %}
-
-                    <div class="info-item">
-
-                        <i class="bi bi-telephone"></i>
-
-                        <div>
-
-                            <small class="text-secondary">
-                                Phone
-                            </small>
-
-                            <br>
-
-                            <a href="tel:{{ profile.phone }}">
-                                {{ profile.phone }}
+                        {% if profile.phone %}
+                            <a href="tel:{{ profile.phone }}" class="bento-info-tile">
+                                <div class="tile-icon"><i class="bi bi-telephone-fill"></i></div>
+                                <div class="tile-meta">
+                                    <small>Phone</small>
+                                    <span>{{ profile.phone }}</span>
+                                </div>
+                                <i class="bi bi-arrow-up-right tile-arrow"></i>
                             </a>
+                        {% endif %}
 
-                        </div>
-
+                        {% if profile.location %}
+                            <div class="bento-info-tile">
+                                <div class="tile-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                                <div class="tile-meta">
+                                    <small>Location</small>
+                                    <span class="location-text-fix">{{ profile.location }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
-
-                    {% endif %}
-
-
-                    {% if profile.location %}
-
-                    <div class="info-item">
-
-                        <i class="bi bi-geo-alt"></i>
-
-                        <div>
-
-                            <small class="text-secondary">
-                                Location
-                            </small>
-
-                            <br>
-
-                            {{ profile.location }}
-
-                        </div>
-
-                    </div>
-
-                    {% endif %}
-
-
                 </div>
 
-
             </div>
-
-
-        </div>
-
-
         {% endif %}
 
-
     </div>
-
 </section>

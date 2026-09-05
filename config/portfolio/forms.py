@@ -44,3 +44,19 @@ class ContactForm(forms.Form):
             }
         ),
     )
+    
+    resume_choice = forms.ChoiceField(
+    choices=[
+        (
+            "yes",
+            "Yes, download resume",
+        ),
+        (
+            "no",
+            "No, just send message",
+        ),
+    ],
+    widget=forms.RadioSelect,
+    initial="no",
+    label="Would you like to download my resume?",
+)
