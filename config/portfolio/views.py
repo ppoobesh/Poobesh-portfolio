@@ -62,6 +62,7 @@ def home(request):
             "title",
         )
     )
+
     education = (
         Education.objects
         .filter(is_active=True)
@@ -70,7 +71,7 @@ def home(request):
             "-start_date",
         )
     )
-    
+
     training_courses = (
         TrainingCourse.objects
         .filter(is_active=True)
@@ -85,7 +86,6 @@ def home(request):
         .filter(is_active=True)
         .first()
     )
-
 
     # =========================================================
     # CONTACT FORM
@@ -107,15 +107,11 @@ def home(request):
                 ) == "yes"
             )
 
-
-            # A resume is considered downloadable only when an
-            # active resume actually exists.
             resume_will_download = (
                 resume_requested
                 and resume is not None
                 and bool(resume.resume_file)
             )
-
 
             # -------------------------------------------------
             # SAVE MESSAGE TO ORACLE FIRST
@@ -149,7 +145,6 @@ def home(request):
                     )
                 )
 
-
                 # ---------------------------------------------
                 # LOG RESUME DOWNLOAD
                 # ---------------------------------------------
@@ -165,17 +160,8 @@ def home(request):
                         )
                     )
 
-
             # -------------------------------------------------
             # SEND ONE CONTACT EMAIL
-            # -------------------------------------------------
-            #
-            # YES:
-            # Message + Resume Downloaded: YES
-            #
-            # NO:
-            # Message + Resume Downloaded: NO
-            #
             # -------------------------------------------------
 
             email_success = (
@@ -185,7 +171,6 @@ def home(request):
                 )
             )
 
-
             if email_success:
 
                 contact_message.email_sent = True
@@ -193,7 +178,6 @@ def home(request):
                 contact_message.save(
                     update_fields=["email_sent"]
                 )
-
 
                 if resume_download:
 
@@ -205,23 +189,27 @@ def home(request):
                         ]
                     )
 
-
             # -------------------------------------------------
             # YES → DOWNLOAD RESUME IMMEDIATELY
             # -------------------------------------------------
 
             if resume_will_download:
 
+                filename = (
+                    resume.resume_file.name
+                    .split("/")[-1]
+                    .split("\\")[-1]
+                )
+
+                if not filename.lower().endswith(".pdf"):
+                    filename += ".pdf"
+
                 return FileResponse(
                     resume.resume_file.open("rb"),
                     as_attachment=True,
-                    filename=(
-                        resume.resume_file.name
-                        .split("/")[-1]
-                        .split("\\")[-1]
-                    ),
+                    filename=filename,
+                    content_type="application/pdf",
                 )
-
 
             # -------------------------------------------------
             # USER SELECTED YES BUT NO ACTIVE RESUME EXISTS
@@ -244,14 +232,11 @@ def home(request):
                     "Your message has been sent successfully.",
                 )
 
-
             return redirect("/#contact")
-
 
     else:
 
         contact_form = ContactForm()
-
 
     # =========================================================
     # TEMPLATE CONTEXT
@@ -269,7 +254,6 @@ def home(request):
         "contact_form": contact_form,
     }
 
-
     return render(
         request,
         "portfolio/home.html",
@@ -282,8 +266,6 @@ def home(request):
 # =============================================================
 #
 # Used by the hero Download Resume button.
-#
-# This is different from contact-form YES.
 #
 # Contact form YES:
 #     one contact email with Resume Downloaded = YES
@@ -308,15 +290,16 @@ def download_resume(request, resume_id):
             "Resume not found."
         )
 
-
     if not resume.resume_file:
 
         raise Http404(
             "Resume file not found."
         )
 
+    # ---------------------------------------------------------
+    # LOG DIRECT RESUME DOWNLOAD
+    # ---------------------------------------------------------
 
-    # Direct hero download has no required contact message.
     resume_download = (
         ResumeDownload.objects.create(
             resume=resume,
@@ -324,13 +307,15 @@ def download_resume(request, resume_id):
         )
     )
 
+    # ---------------------------------------------------------
+    # SEND DOWNLOAD NOTIFICATION EMAIL
+    # ---------------------------------------------------------
 
     email_success = (
         send_resume_download_notification(
             resume_download
         )
     )
-
 
     if email_success:
 
@@ -342,15 +327,28 @@ def download_resume(request, resume_id):
             ]
         )
 
+    # ---------------------------------------------------------
+    # PREPARE PDF FILENAME
+    # ---------------------------------------------------------
+
+    filename = (
+        resume.resume_file.name
+        .split("/")[-1]
+        .split("\\")[-1]
+    )
+
+    if not filename.lower().endswith(".pdf"):
+        filename += ".pdf"
+
+    # ---------------------------------------------------------
+    # DOWNLOAD PDF
+    # ---------------------------------------------------------
 
     return FileResponse(
         resume.resume_file.open("rb"),
         as_attachment=True,
-        filename=(
-            resume.resume_file.name
-            .split("/")[-1]
-            .split("\\")[-1]
-        ),
+        filename=filename,
+        content_type="application/pdf",
     )
 
 
