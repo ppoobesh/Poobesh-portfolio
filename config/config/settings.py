@@ -87,20 +87,28 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+#DATABASES = {
+    #'default': {
+    #    'ENGINE': 'django.db.backends.oracle',
+    #    "NAME":(f'{os.getenv('ORACLE_HOST')}:'
+    #            f'{os.getenv('ORACLE_PORT')}/'
+    #            f'{os.getenv('ORACLE_SERVICE_NAME')}'
+    #            ),
+    #   'USER': os.getenv('ORACLE_USER'),
+    #   'PASSWORD': os.getenv('ORACLE_PASSWORD'),
+    #    'HOST': "",
+    #    "PORT": "",
+    #}
+#}
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        "NAME":(f'{os.getenv('ORACLE_HOST')}:'
-                f'{os.getenv('ORACLE_PORT')}/'
-                f'{os.getenv('ORACLE_SERVICE_NAME')}'
-                ),
-        'USER': os.getenv('ORACLE_USER'),
-        'PASSWORD': os.getenv('ORACLE_PASSWORD'),
-        'HOST': "",
-        "PORT": "",
+    "default": {
+        "ENGINE": "django.db.backends.oracle",
+        "NAME": os.getenv("ORACLE_DSN"),
+        "USER": os.getenv("ORACLE_USER"),
+        "PASSWORD": os.getenv("ORACLE_PASSWORD"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
