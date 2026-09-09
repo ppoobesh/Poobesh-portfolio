@@ -39,14 +39,15 @@
                                 </a>
                             {% endif %}
 
-                            {% if profile and profile.location %}
-                                <div class="bento-info-tile">
-                                    <div class="tile-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                            {% if profile and profile.phone %}
+                                <a href="https://wa.me/{{ profile.phone|cut:' '|cut:'+'|cut:'-' }}?text=Hi%20{{ profile.full_name|urlencode }},%20I%20saw%20your%20portfolio!" target="_blank" rel="noopener noreferrer" class="bento-info-tile">
+                                    <div class="tile-icon"><i class="bi bi-whatsapp"></i></div>
                                     <div class="tile-meta">
-                                        <small>Location</small>
-                                        <span class="location-text-fix">{{ profile.location }}</span>
+                                        <small>WhatsApp</small>
+                                        <span>Drop a "Hi" on WhatsApp</span>
                                     </div>
-                                </div>
+                                    <i class="bi bi-arrow-up-right tile-arrow"></i>
+                                </a>
                             {% endif %}
                         </div>
                     </div>

@@ -1,15 +1,18 @@
+{% load static %}
+
 <section id="home" class="bento-hero">
     <div class="container">
         <div class="bento-hero-grid">
             
+            <!-- Main Hero Intro Card -->
             <div class="bento-card hero-main-card">
                 <div class="hero-status-pill mb-3">
                     <span class="pulse-dot"></span>
-                    <span>Ready for Engineering Challenges</span>
+                    <span>Actively Seeking Opportunities</span>
                 </div>
 
                 <h1 class="hero-headline">
-                    {% if profile %}
+                    {% if profile and profile.full_name %}
                         Hey, I'm <span class="highlight-text">{{ profile.full_name }}</span>.
                     {% else %}
                         Building Scalable <span class="highlight-text">Software Systems</span>.
@@ -19,11 +22,11 @@
                 <div class="hero-console-role">
                     <span class="console-tag">ROLE:</span>
                     <p class="console-text font-monospace mb-0">
-                        {% if profile %}{{ profile.professional_title }}{% else %}Full-Stack Software Engineer{% endif %}
+                        {% if profile and profile.professional_title %}{{ profile.professional_title }}{% else %}Full-Stack Software Engineer{% endif %}
                     </p>
                 </div>
 
-                {% if profile.short_intro %}
+                {% if profile and profile.short_intro %}
                     <p class="hero-subtext">
                         {{ profile.short_intro }}
                     </p>
@@ -46,10 +49,11 @@
                 </div>
             </div>
 
+            <!-- Avatar Card -->
             <div class="bento-card hero-avatar-card">
                 <div class="avatar-frame">
                     {% if profile and profile.profile_image %}
-                        <img src="{{ profile.profile_image.url }}" alt="{{ profile.full_name }}" class="bento-avatar-img">
+                        <img src="{{ profile.profile_image.url }}" alt="{{ profile.full_name|default:'Profile' }}" class="bento-avatar-img">
                     {% else %}
                         <div class="avatar-fallback">
                             <i class="bi bi-terminal-fill"></i>
@@ -67,12 +71,12 @@
                             <span class="dot dot-yellow"></span>
                             <span class="dot dot-green"></span>
                         </div>
-                        <span class="console-user font-monospace">visitor@{% if profile %}{{ profile.full_name|slugify }}{% else %}portfolio{% endif %}</span>
+                        <span class="console-user font-monospace">visitor@{% if profile and profile.full_name %}{{ profile.full_name|slugify }}{% else %}portfolio{% endif %}</span>
                     </div>
 
                     <div class="console-body font-monospace" id="terminalLog">
                         <div class="log-line text-intro">
-                            Hi, I'm {% if profile %}{{ profile.full_name }}{% else %}Developer{% endif %}. Type "<span class="text-cmd-hint">help</span>" to look around.
+                            Hi, I'm {% if profile and profile.full_name %}{{ profile.full_name }}{% else %}Developer{% endif %}. Type "<span class="text-cmd-hint">help</span>" to look around.
                         </div>
                     </div>
 
@@ -86,6 +90,7 @@
                 </div>
             </div>
 
+            <!-- Social Coordinates Card -->
             {% if social_links %}
                 <div class="bento-card hero-social-card">
                     <span class="bento-micro-label">Connect &amp; Socials</span>

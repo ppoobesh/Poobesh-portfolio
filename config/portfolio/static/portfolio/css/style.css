@@ -305,10 +305,13 @@ body {
     margin-bottom: 20px;
 }
 .highlight-text {
+    display: inline-block; /* Prevents inline line-box clipping */
+    padding-right: 0.08em; /* Gives the trailing 'P' room to breathe */
     background: linear-gradient(135deg, var(--accent-light), var(--teal));
     -webkit-background-clip: text;
-    background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
 }
 .hero-console-role {
     display: flex;
