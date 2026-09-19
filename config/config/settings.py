@@ -52,7 +52,7 @@ INSTALLED_APPS = [
 
     "cloudinary_storage",
     "cloudinary",
-
+    
     "portfolio",
 ]
 
