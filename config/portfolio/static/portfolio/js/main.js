@@ -116,80 +116,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
-    // =====================================================
-// 5. AUTO-CLOSE RESUME MODAL & DOWNLOAD VIA FETCH
-// =====================================================
-const resumeModalEl = document.getElementById("resumeEmailModal");
-if (resumeModalEl) {
-    const resumeForm = resumeModalEl.querySelector("form");
-    if (resumeForm) {
-        resumeForm.addEventListener("submit", async function (e) {
-            e.preventDefault(); // Stop default navigation lock
-
-            const submitBtn = resumeForm.querySelector("button[type='submit']");
-            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : "";
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = `<span>Downloading...</span>`;
-            }
-
-            const formData = new FormData(resumeForm);
-            const actionUrl = resumeForm.getAttribute("action");
-
-            try {
-                const response = await fetch(actionUrl, {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        "X-Requested-With": "XMLHttpRequest",
-                    }
-                });
-
-                if (!response.ok) throw new Error("Download failed");
-
-                // Convert file stream to downloadable blob
-                const blob = await response.blob();
-                const downloadUrl = window.URL.createObjectURL(blob);
-                const tempLink = document.createElement("a");
-                tempLink.href = downloadUrl;
-
-                // Extract filename from header or fallback
-                const disposition = response.headers.get("Content-Disposition");
-                let fileName = "resume.pdf";
-                if (disposition && disposition.includes("filename=")) {
-                    fileName = disposition.split("filename=")[1].replace(/["']/g, "").trim();
-                }
-                tempLink.download = fileName;
-                document.body.appendChild(tempLink);
-                tempLink.click();
-                tempLink.remove();
-                window.URL.revokeObjectURL(downloadUrl);
-
-            } catch (err) {
-                console.error("Resume download error:", err);
-            } finally {
-                // Instantly dismiss modal and clean backdrops
-                const modalInstance = bootstrap.Modal.getInstance(resumeModalEl) || new bootstrap.Modal(resumeModalEl);
-                modalInstance.hide();
-
-                resumeForm.reset();
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnHtml;
-                }
-
-                // Force clear backdrops and restore page scroll
-                setTimeout(() => {
-                    document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
-                    document.body.classList.remove("modal-open");
-                    document.body.style.removeProperty("overflow");
-                    document.body.style.removeProperty("padding-right");
-                }, 200);
-            }
-        });
-    }
-}
-
     function runCliCommand(rawText) {
         const cmd = rawText.trim().toLowerCase();
         appendTerminal(`<div class="log-cmd-echo"><span class="prompt-sym">$</span> ${rawText}</div>`);
@@ -304,7 +230,6 @@ if (resumeModalEl) {
                     </div>
                 `);
                 break;
-        
         }
     }
 
@@ -319,5 +244,74 @@ if (resumeModalEl) {
             }
         });
     }
-});
 
+    // =====================================================
+    // 5. AUTO-CLOSE RESUME MODAL & DOWNLOAD VIA FETCH
+    // =====================================================
+    const resumeModalEl = document.getElementById("resumeEmailModal");
+    if (resumeModalEl) {
+        const resumeForm = resumeModalEl.querySelector("form");
+        if (resumeForm) {
+            resumeForm.addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                const submitBtn = resumeForm.querySelector("button[type='submit']");
+                const originalBtnHtml = submitBtn ? submitBtn.innerHTML : "";
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `<span>Downloading...</span>`;
+                }
+
+                const formData = new FormData(resumeForm);
+                const actionUrl = resumeForm.getAttribute("action");
+
+                try {
+                    const response = await fetch(actionUrl, {
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                        }
+                    });
+
+                    if (!response.ok) throw new Error("Download failed");
+
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const tempLink = document.createElement("a");
+                    tempLink.href = downloadUrl;
+
+                    const disposition = response.headers.get("Content-Disposition");
+                    let fileName = "resume.pdf";
+                    if (disposition && disposition.includes("filename=")) {
+                        fileName = disposition.split("filename=")[1].replace(/["']/g, "").trim();
+                    }
+                    tempLink.download = fileName;
+                    document.body.appendChild(tempLink);
+                    tempLink.click();
+                    tempLink.remove();
+                    window.URL.revokeObjectURL(downloadUrl);
+
+                } catch (err) {
+                    console.error("Resume download error:", err);
+                } finally {
+                    const modalInstance = bootstrap.Modal.getInstance(resumeModalEl) || new bootstrap.Modal(resumeModalEl);
+                    modalInstance.hide();
+
+                    resumeForm.reset();
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnHtml;
+                    }
+
+                    setTimeout(() => {
+                        document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+                        document.body.classList.remove("modal-open");
+                        document.body.style.removeProperty("overflow");
+                        document.body.style.removeProperty("padding-right");
+                    }, 200);
+                }
+            });
+        }
+    }
+});
