@@ -116,6 +116,34 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
+    // =====================================================
+    // 5. AUTO-CLOSE RESUME MODAL AFTER DOWNLOAD TRIGGER
+    // =====================================================
+    const resumeModalEl = document.getElementById("resumeEmailModal");
+    if (resumeModalEl) {
+        const resumeForm = resumeModalEl.querySelector("form");
+        if (resumeForm) {
+            resumeForm.addEventListener("submit", function () {
+                // Short timeout lets the native form POST initiate the file download
+                setTimeout(() => {
+                    const modalInstance = bootstrap.Modal.getInstance(resumeModalEl);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+
+                    // Reset form field for next time
+                    resumeForm.reset();
+
+                    // Cleanup lingering backdrop on mobile Safari / Android Chrome
+                    document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+                    document.body.classList.remove("modal-open");
+                    document.body.style.removeProperty("padding-right");
+                    document.body.style.removeProperty("overflow");
+                }, 350);
+            });
+        }
+    }
+
     function runCliCommand(rawText) {
         const cmd = rawText.trim().toLowerCase();
         appendTerminal(`<div class="log-cmd-echo"><span class="prompt-sym">$</span> ${rawText}</div>`);
