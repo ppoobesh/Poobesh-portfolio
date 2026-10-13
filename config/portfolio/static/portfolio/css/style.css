@@ -380,17 +380,32 @@ body {
     justify-content: center;
     padding: 24px;
 }
+/* ==========================================================================
+   AVATAR FRAME & IMAGE POSITIONING FIX
+   ========================================================================== */
 .avatar-frame {
-    position: relative;
     width: 100%;
-    max-width: 290px;
-    aspect-ratio: 1;
+    height: 100%;
+    min-height: 280px;
     border-radius: 20px;
     overflow: hidden;
-    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.02);
 }
+
 .bento-avatar-img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%; /* Anchors near top so hair/head isn't cut off */
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.bento-avatar-img:hover {
+    transform: scale(1.02);
 }
 .avatar-fallback {
     width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
