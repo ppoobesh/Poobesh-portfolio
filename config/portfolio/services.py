@@ -3,6 +3,10 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import escape, linebreaks
 
+import zoneinfo
+
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -101,6 +105,9 @@ def send_contact_notification(contact_message, resume_downloaded=False):
     status_color = "#15803d" if resume_downloaded else "#64748b"
     status_bg = "#dcfce7" if resume_downloaded else "#f1f5f9"
 
+    ist_zone = zoneinfo.ZoneInfo("Asia/Kolkata")
+    msg_time = contact_message.created_at.astimezone(ist_zone).strftime("%b %d, %Y — %I:%M %p IST")
+
     name = escape(contact_message.sender_name)
     email = escape(contact_message.sender_email)
     subject_text = escape(contact_message.subject or "Direct Inquiry")
@@ -112,6 +119,7 @@ def send_contact_notification(contact_message, resume_downloaded=False):
 
 Sender Name : {contact_message.sender_name}
 Sender Email: {contact_message.sender_email}
+Timestamp   : {msg_time}
 Subject     : {contact_message.subject or 'No subject specified'}
 Resume Req. : {resume_status_text}
 
@@ -124,6 +132,7 @@ Message:
     rows = (
         _build_meta_row("Sender", name) +
         _build_meta_row("Email", f"<a href='mailto:{email}' style='color: #4f46e5; text-decoration: none; font-weight: 600;'>{email}</a>") +
+        _build_meta_row("Timestamp", msg_time) +
         _build_meta_row("Subject", subject_text) +
         _build_meta_row("Resume Req.", resume_status_text, is_highlight=True, highlight_color=status_color, highlight_bg=status_bg)
     )
@@ -152,78 +161,197 @@ Message:
         return False
 
 
+# def send_resume_download_notification(resume_download):
+#     """
+#     Dispatches a clean light-mode notification when a resume is downloaded.
+#     """
+#     contact = resume_download.contact_message
+#     download_time = resume_download.downloaded_at.strftime("%b %d, %Y — %I:%M %p")
+#     resume_title = escape(resume_download.resume.title)
+
+#     if contact:
+#         subject = f"Resume Downloaded: {contact.sender_name}"
+#         name = escape(contact.sender_name)
+#         email = escape(contact.sender_email)
+#         subject_text = escape(contact.subject or "No subject")
+#         message_content = linebreaks(escape(contact.message))
+
+#         text_body = f"""[RESUME DOWNLOAD EVENT]
+
+# Resume Title : {resume_download.resume.title}
+# Downloaded At: {download_time}
+# Associated Contact: YES
+
+# Name : {contact.sender_name}
+# Email: {contact.sender_email}
+# Subject: {contact.subject or 'No subject'}
+
+# Message:
+# --------------------------------------------------
+# {contact.message}
+# --------------------------------------------------
+# """
+
+#         rows = (
+#             _build_meta_row("Document", resume_title) +
+#             _build_meta_row("Timestamp", download_time) +
+#             _build_meta_row("Sender", name) +
+#             _build_meta_row("Email", f"<a href='mailto:{email}' style='color: #4f46e5; text-decoration: none; font-weight: 600;'>{email}</a>") +
+#             _build_meta_row("Subject", subject_text)
+#         )
+
+#         html_body = _build_email_card(
+#             title_badge="./resume_event",
+#             heading="Resume Downloaded with Inquiry",
+#             body_table_rows=rows,
+#             message_box=message_content,
+#             meta_footer="Portfolio Analytics Engine"
+#         )
+#         reply_to = [contact.sender_email]
+
+#     else:
+#         subject = f"Portfolio Resume Downloaded: {resume_download.resume.title}"
+
+#         text_body = f"""[RESUME DOWNLOAD EVENT]
+
+# Resume Title : {resume_download.resume.title}
+# Downloaded At: {download_time}
+# Visitor Type : Anonymous Visitor
+# """
+
+#         rows = (
+#             _build_meta_row("Document", resume_title) +
+#             _build_meta_row("Timestamp", download_time) +
+#             _build_meta_row("Visitor", "Anonymous Visitor", is_highlight=True, highlight_color="#0284c7", highlight_bg="#e0f2fe")
+#         )
+
+#         html_body = _build_email_card(
+#             title_badge="./direct_download",
+#             heading="Resume Downloaded",
+#             body_table_rows=rows,
+#             message_box=None,
+#             meta_footer="Direct Asset Download Notification"
+#         )
+#         reply_to = None
+
+#     try:
+#         mail = EmailMultiAlternatives(
+#             subject=subject,
+#             body=text_body,
+#             from_email=settings.DEFAULT_FROM_EMAIL,
+#             to=[settings.NOTIFICATION_EMAIL],
+#             reply_to=reply_to,
+#         )
+#         mail.attach_alternative(html_body, "text/html")
+#         mail.send()
+#         return True
+#     except Exception as error:
+#         logger.error(f"Resume notification email dispatch failure: {error}")
+#         return False
+
+
 def send_resume_download_notification(resume_download):
     """
-    Dispatches a clean light-mode notification when a resume is downloaded.
+    Sends a notification when a resume is downloaded.
+    Supports contact-form downloads and direct downloads using a visitor email.
     """
     contact = resume_download.contact_message
-    download_time = resume_download.downloaded_at.strftime("%b %d, %Y — %I:%M %p")
+    ist_zone = zoneinfo.ZoneInfo("Asia/Kolkata")
+    download_time = resume_download.downloaded_at.astimezone(ist_zone).strftime(
+        "%b %d, %Y — %I:%M %p IST"
+    )
     resume_title = escape(resume_download.resume.title)
 
     if contact:
-        subject = f"Resume Downloaded: {contact.sender_name}"
-        name = escape(contact.sender_name)
-        email = escape(contact.sender_email)
-        subject_text = escape(contact.subject or "No subject")
-        message_content = linebreaks(escape(contact.message))
+        visitor_name = contact.sender_name
+        visitor_email = contact.sender_email
+        subject = f"Resume Downloaded: {visitor_name}"
+        heading = "Resume Downloaded with Inquiry"
 
         text_body = f"""[RESUME DOWNLOAD EVENT]
 
-Resume Title : {resume_download.resume.title}
-Downloaded At: {download_time}
-Associated Contact: YES
+    Resume Title : {resume_download.resume.title}
+    Downloaded At: {download_time}
+    Visitor Type : Contact Form
 
-Name : {contact.sender_name}
-Email: {contact.sender_email}
-Subject: {contact.subject or 'No subject'}
+    Name : {contact.sender_name}
+    Email: {contact.sender_email}
+    Subject: {contact.subject or 'No subject'}
 
-Message:
---------------------------------------------------
-{contact.message}
---------------------------------------------------
-"""
+    Message:
+
+    {contact.message}
+
+    """
 
         rows = (
-            _build_meta_row("Document", resume_title) +
-            _build_meta_row("Timestamp", download_time) +
-            _build_meta_row("Sender", name) +
-            _build_meta_row("Email", f"<a href='mailto:{email}' style='color: #4f46e5; text-decoration: none; font-weight: 600;'>{email}</a>") +
-            _build_meta_row("Subject", subject_text)
+            _build_meta_row("Document", resume_title)
+            + _build_meta_row("Timestamp", download_time)
+            + _build_meta_row("Sender", escape(visitor_name))
+            + _build_meta_row(
+                "Email",
+                f"<a href='mailto:{escape(visitor_email)}' "
+                "style='color:#4f46e5;text-decoration:none;font-weight:600;'>"
+                f"{escape(visitor_email)}</a>",
+            )
+            + _build_meta_row(
+                "Subject",
+                escape(contact.subject or "No subject"),
+            )
         )
 
-        html_body = _build_email_card(
-            title_badge="./resume_event",
-            heading="Resume Downloaded with Inquiry",
-            body_table_rows=rows,
-            message_box=message_content,
-            meta_footer="Portfolio Analytics Engine"
-        )
-        reply_to = [contact.sender_email]
+        message_content = linebreaks(escape(contact.message))
+        reply_to = [visitor_email]
 
     else:
+        visitor_email = resume_download.visitor_email.strip()
+
         subject = f"Portfolio Resume Downloaded: {resume_download.resume.title}"
+        heading = "Resume Downloaded"
+        message_content = None
+
+        if visitor_email:
+            visitor_email_html = escape(visitor_email)
+            visitor_row = _build_meta_row(
+                "Visitor Email",
+                f"<a href='mailto:{visitor_email_html}' "
+                "style='color:#4f46e5;text-decoration:none;font-weight:600;'>"
+                f"{visitor_email_html}</a>",
+            )
+
+            visitor_text = f"Visitor Email: {visitor_email}"
+            reply_to = [visitor_email]
+        else:
+            visitor_row = _build_meta_row(
+                "Visitor",
+                "Email not provided",
+                is_highlight=True,
+                highlight_color="#b45309",
+                highlight_bg="#fef3c7",
+            )
+            visitor_text = "Visitor: Email not provided"
+            reply_to = None
 
         text_body = f"""[RESUME DOWNLOAD EVENT]
 
-Resume Title : {resume_download.resume.title}
-Downloaded At: {download_time}
-Visitor Type : Anonymous Visitor
-"""
+    Resume Title : {resume_download.resume.title}
+    Downloaded At: {download_time}
+    {visitor_text}
+    """
 
         rows = (
-            _build_meta_row("Document", resume_title) +
-            _build_meta_row("Timestamp", download_time) +
-            _build_meta_row("Visitor", "Anonymous Visitor", is_highlight=True, highlight_color="#0284c7", highlight_bg="#e0f2fe")
+            _build_meta_row("Document", resume_title)
+            + _build_meta_row("Timestamp", download_time)
+            + visitor_row
         )
 
-        html_body = _build_email_card(
-            title_badge="./direct_download",
-            heading="Resume Downloaded",
-            body_table_rows=rows,
-            message_box=None,
-            meta_footer="Direct Asset Download Notification"
-        )
-        reply_to = None
+    html_body = _build_email_card(
+        title_badge="./resume_event",
+        heading=heading,
+        body_table_rows=rows,
+        message_box=message_content,
+        meta_footer="Portfolio Resume Download Notification",
+    )
 
     try:
         mail = EmailMultiAlternatives(
@@ -236,6 +364,10 @@ Visitor Type : Anonymous Visitor
         mail.attach_alternative(html_body, "text/html")
         mail.send()
         return True
+
     except Exception as error:
-        logger.error(f"Resume notification email dispatch failure: {error}")
+        logger.error(
+            "Resume notification email dispatch failure: %s",
+            error,
+        )
         return False

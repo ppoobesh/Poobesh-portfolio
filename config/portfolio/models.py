@@ -234,8 +234,41 @@ class ContactMessage(models.Model):
         ordering = ["-created_at"]
         
 
-class ResumeDownload(models.Model):
+# class ResumeDownload(models.Model):
 
+#     resume = models.ForeignKey(
+#         Resume,
+#         on_delete=models.CASCADE,
+#         related_name="downloads",
+#     )
+
+#     contact_message = models.ForeignKey(
+#         ContactMessage,
+#         on_delete=models.SET_NULL,
+#         null=True,
+#         blank=True,
+#         related_name="resume_downloads",
+#     )
+
+#     downloaded_at = models.DateTimeField(
+#         auto_now_add=True
+#     )
+
+#     notification_sent = models.BooleanField(
+#         default=False
+#     )
+
+#     def __str__(self):
+#         return (
+#             f"{self.resume.title} - "
+#             f"{self.downloaded_at}"
+#         )
+
+#     class Meta:
+#         ordering = ["-downloaded_at"]
+
+
+class ResumeDownload(models.Model):
     resume = models.ForeignKey(
         Resume,
         on_delete=models.CASCADE,
@@ -250,19 +283,19 @@ class ResumeDownload(models.Model):
         related_name="resume_downloads",
     )
 
-    downloaded_at = models.DateTimeField(
-        auto_now_add=True
+    # Email entered by visitors using the direct Download Resume button
+    visitor_email = models.EmailField(
+        blank=True,
+        default="",
+        help_text="Email entered by the visitor when downloading the resume.",
     )
 
-    notification_sent = models.BooleanField(
-        default=False
-    )
+    downloaded_at = models.DateTimeField(auto_now_add=True)
+
+    notification_sent = models.BooleanField(default=False)
 
     def __str__(self):
-        return (
-            f"{self.resume.title} - "
-            f"{self.downloaded_at}"
-        )
+        return f"{self.resume.title} - {self.downloaded_at}"
 
     class Meta:
         ordering = ["-downloaded_at"]

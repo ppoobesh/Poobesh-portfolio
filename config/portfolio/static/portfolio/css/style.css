@@ -1444,3 +1444,49 @@ input.console-input::placeholder {
     background: var(--accent);
     color: #ffffff;
 }
+
+
+/* ==========================================================================
+   RESUME EMAIL MODAL (BENTO THEME)
+   ========================================================================== */
+.bento-modal-content {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+    color: var(--text);
+}
+
+.bento-modal-input {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid var(--border) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    font-size: 0.88rem;
+    padding: 10px 14px;
+    transition: all 0.2s ease;
+}
+
+.bento-modal-input:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow) !important;
+    outline: none;
+}
+
+[data-theme="light"] .bento-modal-content {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.1) !important;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+}
+
+[data-theme="light"] .bento-modal-input {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .btn-close-white {
+    filter: none;
+}

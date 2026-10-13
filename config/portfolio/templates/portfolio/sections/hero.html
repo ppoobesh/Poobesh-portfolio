@@ -41,6 +41,128 @@
                         <span>Get in Touch</span>
                     </a>
                     {% if resume and resume.resume_file %}
+                        <button
+                            type="button"
+                            class="btn-ghost-action resume-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#resumeEmailModal">
+                            <i class="bi bi-file-earmark-arrow-down" aria-hidden="true"></i>
+                            <span class="ms-1">Resume</span>
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Avatar Card -->
+            <div class="bento-card hero-avatar-card">
+                <div class="avatar-frame">
+                    {% if profile and profile.profile_image %}
+                        <img src="{{ profile.profile_image.url }}" alt="{{ profile.full_name|default:'Profile' }}" class="bento-avatar-img">
+                    {% else %}
+                        <div class="avatar-fallback">
+                            <i class="bi bi-terminal-fill"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Interactive Poke-Around Terminal Console -->
+            <div class="bento-card hero-terminal-card">
+                <div class="terminal-console-window">
+                    <div class="console-header">
+                        <div class="console-dots">
+                            <span class="dot dot-red"></span>
+                            <span class="dot dot-yellow"></span>
+                            <span class="dot dot-green"></span>
+                        </div>
+                        <span class="console-user font-monospace">visitor@{% if profile and profile.full_name %}{{ profile.full_name|slugify }}{% else %}portfolio{% endif %}</span>
+                    </div>
+
+                    <div class="console-body font-monospace" id="terminalLog">
+                        <div class="log-line text-intro">
+                            Hi, I'm {% if profile and profile.full_name %}{{ profile.full_name }}{% else %}Developer{% endif %}. Type "<span class="text-cmd-hint">help</span>" to look around.
+                        </div>
+                    </div>
+
+                    <div class="console-footer">
+                        <span class="console-prompt font-monospace">$</span>
+                        <input type="text" id="cliInput" class="console-input font-monospace" placeholder="type 'help' and press enter" autocomplete="off" spellcheck="false">
+                    </div>
+                </div>
+                <div class="console-caption font-monospace text-center mt-2">
+                    A small poke-around terminal — try <code>help</code>, <code>skills</code>, <code>education</code>, or <code>clear</code>.
+                </div>
+            </div>
+
+            <!-- Social Coordinates Card -->
+            {% if social_links %}
+                <div class="bento-card hero-social-card">
+                    <span class="bento-micro-label">Connect &amp; Socials</span>
+                    <div class="social-chip-grid">
+                        {% for social in social_links %}
+                            <a href="{{ social.url }}" target="_blank" rel="noopener noreferrer" class="social-chip">
+                                {% if social.icon %}<i class="{{ social.icon }}"></i>
+                                {% elif social.platform == "github" %}<i class="bi bi-github"></i>
+                                {% elif social.platform == "linkedin" %}<i class="bi bi-linkedin"></i>
+                                {% elif social.platform == "twitter" %}<i class="bi bi-twitter-x"></i>
+                                {% else %}<i class="bi bi-link-45deg"></i>{% endif %}
+                                <span>{{ social.display_name|default:social.get_platform_display }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+
+
+
+
+{% comment %} {% load static %}
+
+<section id="home" class="bento-hero">
+    <div class="container">
+        <div class="bento-hero-grid">
+            
+            <!-- Main Hero Intro Card -->
+            <div class="bento-card hero-main-card">
+                <div class="hero-status-pill mb-3">
+                    <span class="pulse-dot"></span>
+                    <span>Software Developer @ EcoSoft Zolutions</span>
+                </div>
+
+                <h1 class="hero-headline">
+                    {% if profile and profile.full_name %}
+                        Hey, I'm <span class="highlight-text">{{ profile.full_name }}</span>.
+                    {% else %}
+                        Building Scalable <span class="highlight-text">Software Systems</span>.
+                    {% endif %}
+                </h1>
+
+                <div class="hero-console-role">
+                    <span class="console-tag">ROLE:</span>
+                    <p class="console-text font-monospace mb-0">
+                        {% if profile and profile.professional_title %}{{ profile.professional_title }}{% else %}Full-Stack Software Engineer{% endif %}
+                    </p>
+                </div>
+
+                {% if profile and profile.short_intro %}
+                    <p class="hero-subtext">
+                        {{ profile.short_intro }}
+                    </p>
+                {% endif %}
+
+                <div class="hero-btn-row">
+                    <a href="#projects" class="btn-primary-action">
+                        <span>Explore Projects</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                    <a href="#contact" class="btn-ghost-action">
+                        <span>Get in Touch</span>
+                    </a>
+                    {% if resume and resume.resume_file %}
                         <a href="{% url 'portfolio:download_resume' resume.id %}" class="btn-ghost-action resume-btn">
                             <i class="bi bi-download me-1"></i>
                             <span>Resume</span>
@@ -111,4 +233,4 @@
 
         </div>
     </div>
-</section>
+</section> {% endcomment %}

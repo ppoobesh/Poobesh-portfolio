@@ -25,4 +25,87 @@
     {% include "portfolio/sections/education.html" %}
     {% include "portfolio/sections/training.html" %}
     {% include "portfolio/sections/contact.html" %}
+
+    <!-- Resume Email Modal -->
+    {% if resume and resume.resume_file %}
+    <div class="modal fade" id="resumeEmailModal" tabindex="-1" aria-labelledby="resumeEmailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content bento-modal-content">
+                <form method="post" action="{% url 'portfolio:download_resume' resume.id %}">
+                    {% csrf_token %}
+                    
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title font-monospace fw-bold" id="resumeEmailModalLabel">
+                            ./get_resume
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body py-3">
+                        <p class="text-secondary small mb-3">
+                            Enter your email to receive and download a copy of my resume.
+                        </p>
+
+                        <label for="resumeVisitorEmail" class="bento-input-label mb-1">
+                            Your Email *
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            id="resumeVisitorEmail"
+                            class="form-control bento-modal-input font-monospace"
+                            placeholder="Email ID"
+                            autocomplete="email"
+                            maxlength="254"
+                            required
+                        >
+                    </div>
+
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn-ghost-action py-2 px-3" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-primary-action py-2 px-3">
+                            <i class="bi bi-download me-1"></i>
+                            <span>Download</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}
+
+
+
+
+
+{% comment %} {% extends "portfolio/base.html" %}
+
+{% block title %}
+    {% if profile %}
+        {{ profile.full_name }} | {{ profile.professional_title }}
+    {% else %}
+        Professional Portfolio
+    {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+    {% if profile %}
+        {{ profile.short_intro|default:profile.professional_summary|striptags|truncatechars:160 }}
+    {% else %}
+        Professional engineering portfolio featuring projects, skills, experience and education.
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% include "portfolio/sections/hero.html" %}
+    {% include "portfolio/sections/about.html" %}
+    {% include "portfolio/sections/experience.html" %}
+    {% include "portfolio/sections/projects.html" %}
+    {% include "portfolio/sections/skills.html" %}
+    {% include "portfolio/sections/education.html" %}
+    {% include "portfolio/sections/training.html" %}
+    {% include "portfolio/sections/contact.html" %}
+{% endblock %} {% endcomment %}
