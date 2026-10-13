@@ -117,32 +117,78 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     // =====================================================
-    // 5. AUTO-CLOSE RESUME MODAL AFTER DOWNLOAD TRIGGER
-    // =====================================================
-    const resumeModalEl = document.getElementById("resumeEmailModal");
-    if (resumeModalEl) {
-        const resumeForm = resumeModalEl.querySelector("form");
-        if (resumeForm) {
-            resumeForm.addEventListener("submit", function () {
-                // Short timeout lets the native form POST initiate the file download
-                setTimeout(() => {
-                    const modalInstance = bootstrap.Modal.getInstance(resumeModalEl);
-                    if (modalInstance) {
-                        modalInstance.hide();
+// 5. AUTO-CLOSE RESUME MODAL & DOWNLOAD VIA FETCH
+// =====================================================
+const resumeModalEl = document.getElementById("resumeEmailModal");
+if (resumeModalEl) {
+    const resumeForm = resumeModalEl.querySelector("form");
+    if (resumeForm) {
+        resumeForm.addEventListener("submit", async function (e) {
+            e.preventDefault(); // Stop default navigation lock
+
+            const submitBtn = resumeForm.querySelector("button[type='submit']");
+            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : "";
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span>Downloading...</span>`;
+            }
+
+            const formData = new FormData(resumeForm);
+            const actionUrl = resumeForm.getAttribute("action");
+
+            try {
+                const response = await fetch(actionUrl, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
                     }
+                });
 
-                    // Reset form field for next time
-                    resumeForm.reset();
+                if (!response.ok) throw new Error("Download failed");
 
-                    // Cleanup lingering backdrop on mobile Safari / Android Chrome
+                // Convert file stream to downloadable blob
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const tempLink = document.createElement("a");
+                tempLink.href = downloadUrl;
+
+                // Extract filename from header or fallback
+                const disposition = response.headers.get("Content-Disposition");
+                let fileName = "resume.pdf";
+                if (disposition && disposition.includes("filename=")) {
+                    fileName = disposition.split("filename=")[1].replace(/["']/g, "").trim();
+                }
+                tempLink.download = fileName;
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                tempLink.remove();
+                window.URL.revokeObjectURL(downloadUrl);
+
+            } catch (err) {
+                console.error("Resume download error:", err);
+            } finally {
+                // Instantly dismiss modal and clean backdrops
+                const modalInstance = bootstrap.Modal.getInstance(resumeModalEl) || new bootstrap.Modal(resumeModalEl);
+                modalInstance.hide();
+
+                resumeForm.reset();
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
+
+                // Force clear backdrops and restore page scroll
+                setTimeout(() => {
                     document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
                     document.body.classList.remove("modal-open");
-                    document.body.style.removeProperty("padding-right");
                     document.body.style.removeProperty("overflow");
-                }, 350);
-            });
-        }
+                    document.body.style.removeProperty("padding-right");
+                }, 200);
+            }
+        });
     }
+}
 
     function runCliCommand(rawText) {
         const cmd = rawText.trim().toLowerCase();
